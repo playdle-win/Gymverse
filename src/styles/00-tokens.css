@@ -1,1 +1,364 @@
-html, body { height: 100%; margin: 0; }
+/* GymBros design tokens. Screens style ONLY through these (docs/SPEC.md section 6).
+   Three axes, each an attribute on <html> (any element may also carry one to scope a subtree, the kit does):
+     data-style   = studio | arcade | varsity      type, shape, edges, elevation, motion
+     data-gbtheme = ember | cobalt | pine | berry | graphite      one accent family, light + dark
+     data-theme   = light | dark                   only when the user (or the host) forces an appearance
+   Colours were generated in OKLCH and every text / control pair below was checked against WCAG
+   (4.5:1 text, 3:1 large text and control edges). The table is in src/ui/system/README.md. */
+
+:root {
+  color-scheme: light dark;
+
+  /* constant meaning on every theme: the points coin */
+  --points: #F4B41A;
+  --points-edge: #965E00;
+  --points-ink: #4A2E00;
+
+  /* layout */
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --tap: 44px;
+  --navbar-h: 48px;
+  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 20px; --s-6: 24px; --s-8: 32px; --s-10: 40px;
+
+  /* type scale shared by every style (size/line-height). Display sizes are set per style below. */
+  --t-headline: 17px/22px;
+  --t-body: 17px/22px;
+  --t-callout: 16px/21px;
+  --t-foot: 13px/18px;
+  --t-caption: 12px/16px;
+}
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
+
+/* derived tokens, re-resolved wherever a style or theme scope starts */
+:root, [data-gbtheme], [data-style] {
+  --focus: var(--accent-text);
+  --tabbar-space: calc(var(--tabbar-h) + var(--tabbar-bottom));
+  --chart-grid: var(--line);
+  --chart-axis: var(--ink-3);
+  --chart-line: var(--accent);
+  --chart-area: var(--accent-soft);
+  --chart-muted: var(--ink-3);
+}
+
+/* ------------------------------------------------------------------ studio
+   Apple-native. System type, rounded numerals, hairlines, soft layered depth, glass on the floating layer only. */
+:root, [data-style="studio"] {
+  --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter Display", "Inter", system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-num: ui-rounded, "SF Pro Rounded", "Nunito", -apple-system, BlinkMacSystemFont, "Inter", system-ui, sans-serif;
+  --font-label: var(--font-ui);
+  --display-weight: 700; --display-style: normal; --display-case: none; --display-track: -0.022em;
+  --num-weight: 700; --num-style: normal; --num-track: -0.01em; --num-scale: 1;
+  --label-weight: 600; --label-case: none; --label-track: 0;
+  --t-large: 34px/41px;
+  --t-title: 22px/28px;
+  --t-label: 11px/13px;
+  --t-navtitle: 17px/22px; --navtitle-weight: 600;
+  --t-section: 20px/25px;
+  --t-sublabel: 13px/18px;
+
+  --r-s: 10px; --r-m: 14px; --r-l: 24px; --r-pill: 999px;
+  --r-control: 14px;
+  --r-avatar: 50%; --r-fab: 999px;
+  --bw: 1px;
+  --edge: var(--line);
+  --edge-control: transparent;
+  --shadow-1: 0 1px 2px rgb(var(--shadow-rgb) / calc(0.05 * var(--shadow-k))), 0 6px 16px -6px rgb(var(--shadow-rgb) / calc(0.12 * var(--shadow-k)));
+  --shadow-2: 0 2px 6px rgb(var(--shadow-rgb) / calc(0.06 * var(--shadow-k))), 0 22px 48px -12px rgb(var(--shadow-rgb) / calc(0.26 * var(--shadow-k)));
+  --ease: cubic-bezier(0.22, 0.9, 0.28, 1);
+  --dur-1: 160ms; --dur-2: 380ms;
+  --ease-move: cubic-bezier(0.22, 0.9, 0.28, 1);
+  --press: scale(0.97);
+  --seg-thumb: var(--bg-elevated); --seg-ink: var(--ink);
+
+  --gutter: 20px;
+  --tabbar-h: 62px;
+  --tabbar-bottom: max(calc(var(--safe-b) - 10px), 10px);
+}
+
+/* ------------------------------------------------------------------ arcade
+   Habbo-era pixel. Jersey 15 on its native 15px grid for titles, numbers and labels; 2px ink edges, 2 to 4px radii,
+   hard offset shadows, stepped motion. Body copy stays in the system sans. */
+[data-style="arcade"] {
+  --font-display: "Jersey 15", "Jersey 10", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-num: var(--font-display);
+  --font-label: var(--font-display);
+  --display-weight: 400; --display-style: normal; --display-case: none; --display-track: 0.01em;
+  --num-weight: 400; --num-style: normal; --num-track: 0.02em; --num-scale: 1.32;
+  --label-weight: 400; --label-case: none; --label-track: 0;
+  --t-large: 45px/45px;
+  --t-title: 30px/30px;
+  --t-label: 15px/15px;
+  --t-navtitle: 23px/24px; --navtitle-weight: 400;
+  --t-section: 23px/24px;
+  --t-sublabel: 15px/18px;
+
+  --r-s: 2px; --r-m: 3px; --r-l: 4px; --r-pill: 4px;
+  --r-control: 3px;
+  --r-avatar: 3px; --r-fab: 4px;
+  --bw: 2px;
+  --edge: var(--ink);
+  --edge-control: var(--ink);
+  --shadow-1: 3px 3px 0 rgb(var(--shadow-rgb) / calc(0.26 * var(--shadow-k)));
+  --shadow-2: 5px 5px 0 rgb(var(--shadow-rgb) / calc(0.3 * var(--shadow-k)));
+  --ease: steps(4, end);
+  --dur-1: 120ms; --dur-2: 240ms;
+  --ease-move: steps(5, end);
+  --press: translateY(2px);
+  --seg-thumb: var(--accent); --seg-ink: var(--accent-ink);
+  --focus: var(--ink);
+
+  --gutter: 16px;
+  --tabbar-h: 62px;
+  --tabbar-bottom: var(--safe-b);
+}
+
+/* ------------------------------------------------------------------ varsity
+   Bold sport. Barlow Condensed heavy italic capitals for titles and numbers, Barlow for reading, pill controls,
+   inverse blocks, one slanted detail (the active tab and badges). */
+[data-style="varsity"] {
+  --font-ui: "Barlow", -apple-system, BlinkMacSystemFont, "Inter", system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Barlow Condensed", "Avenir Next Condensed", "Roboto Condensed", "Arial Narrow", var(--font-ui);
+  --font-num: var(--font-display);
+  --font-label: var(--font-display);
+  --display-weight: 800; --display-style: italic; --display-case: uppercase; --display-track: 0.004em;
+  --num-weight: 700; --num-style: italic; --num-track: 0.01em; --num-scale: 1.16;
+  --label-weight: 600; --label-case: uppercase; --label-track: 0.07em;
+  --t-large: 46px/42px;
+  --t-title: 28px/28px;
+  --t-label: 12px/13px;
+  --t-navtitle: 22px/24px; --navtitle-weight: 800;
+  --t-section: 24px/24px;
+  --t-sublabel: 13px/18px;
+
+  --r-s: 10px; --r-m: 16px; --r-l: 26px; --r-pill: 999px;
+  --r-control: 999px;
+  --r-avatar: 50%; --r-fab: 999px;
+  --bw: 2px;
+  --edge: transparent;
+  --edge-control: var(--ink);
+  --shadow-1: 0 1px 0 rgb(var(--shadow-rgb) / calc(0.1 * var(--shadow-k))), 0 10px 20px -12px rgb(var(--shadow-rgb) / calc(0.34 * var(--shadow-k)));
+  --shadow-2: 0 2px 0 rgb(var(--shadow-rgb) / calc(0.12 * var(--shadow-k))), 0 26px 44px -18px rgb(var(--shadow-rgb) / calc(0.46 * var(--shadow-k)));
+  --ease: cubic-bezier(0.3, 1.36, 0.5, 1);
+  --dur-1: 150ms; --dur-2: 320ms;
+  --ease-move: cubic-bezier(0.2, 0.9, 0.2, 1);
+  --press: scale(0.95);
+  --seg-thumb: var(--ink); --seg-ink: var(--bg);
+
+  --gutter: 20px;
+  --tabbar-h: 64px;
+  --tabbar-bottom: var(--safe-b);
+}
+
+/* ------------------------------------------------------------------ colour themes (generated, see header) */
+/* ---- light ---- */
+:root, [data-gbtheme="ember"] {
+  --bg:#F6F4F3;--bg-raised:#FEFDFD;--bg-sunken:#EDEAE8;
+  --fill:rgb(29 24 22 / 0.065);--fill-strong:rgb(29 24 22 / 0.13);
+  --ink:#1D1816;--ink-2:#56514F;--ink-3:#6A6663;
+  --line:rgb(29 24 22 / 0.13);--line-strong:#837F7D;
+  --accent:#CF4103;--accent-ink:#FFFBF9;--accent-soft:rgb(207 65 3 / 0.12);--accent-text:#B53700;
+  --good:#036C35;--warn:#865100;--bad:#BA0445;--on-semantic:#FEFBF9;
+  --good-soft:rgb(3 108 53 / 0.12);--warn-soft:rgb(134 81 0 / 0.12);--bad-soft:rgb(186 4 69 / 0.12);
+  --points-text:#855905;--scrim:rgb(29 24 22 / 0.36);--shadow-rgb:51 44 41;
+  --bg-inverse:#1D1816;--ink-inverse:#FBFAF9;--ink-inverse-2:#C0BDBB;--accent-inverse:#FE8746;--accent-inverse-ink:#1A0B04;
+  --bg-elevated:#FEFDFD;--knob:#FFFEFE;
+  --glass:rgb(254 253 253 / 0.68);--glass-edge:rgb(255 255 255 / 0.75);--shadow-k:1;--is-dark:0;
+}
+[data-gbtheme="cobalt"] {
+  --bg:#F1F5FA;--bg-raised:#FCFDFF;--bg-sunken:#E6EBF3;
+  --fill:rgb(19 26 37 / 0.065);--fill-strong:rgb(19 26 37 / 0.13);
+  --ink:#131A25;--ink-2:#4C535F;--ink-3:#616772;
+  --line:rgb(19 26 37 / 0.13);--line-strong:#7A808B;
+  --accent:#1C4FD7;--accent-ink:#FAFCFF;--accent-soft:rgb(28 79 215 / 0.12);--accent-text:#1C4FD7;
+  --good:#036C35;--warn:#865100;--bad:#BC0B20;--on-semantic:#FAFCFF;
+  --good-soft:rgb(3 108 53 / 0.12);--warn-soft:rgb(134 81 0 / 0.12);--bad-soft:rgb(188 11 32 / 0.12);
+  --points-text:#855905;--scrim:rgb(19 26 37 / 0.36);--shadow-rgb:36 46 64;
+  --bg-inverse:#131A25;--ink-inverse:#F8FAFD;--ink-inverse-2:#B9BEC7;--accent-inverse:#77AEFF;--accent-inverse-ink:#080F1C;
+  --bg-elevated:#FCFDFF;--knob:#FEFEFF;
+  --glass:rgb(252 253 255 / 0.68);--glass-edge:rgb(255 255 255 / 0.75);--shadow-k:1;--is-dark:0;
+}
+[data-gbtheme="pine"] {
+  --bg:#F0F6F3;--bg-raised:#FCFEFD;--bg-sunken:#E5EDE8;
+  --fill:rgb(16 29 22 / 0.065);--fill-strong:rgb(16 29 22 / 0.13);
+  --ink:#101D16;--ink-2:#49564F;--ink-3:#5E6A63;
+  --line:rgb(16 29 22 / 0.13);--line-strong:#78837D;
+  --accent:#006749;--accent-ink:#F7FEFA;--accent-soft:rgb(0 103 73 / 0.12);--accent-text:#006749;
+  --good:#456501;--warn:#865100;--bad:#BC0B20;--on-semantic:#FAFDFB;
+  --good-soft:rgb(69 101 1 / 0.12);--warn-soft:rgb(134 81 0 / 0.12);--bad-soft:rgb(188 11 32 / 0.12);
+  --points-text:#855905;--scrim:rgb(16 29 22 / 0.36);--shadow-rgb:31 51 40;
+  --bg-inverse:#101D16;--ink-inverse:#F8FBF9;--ink-inverse-2:#B7C0BB;--accent-inverse:#4BDBA0;--accent-inverse-ink:#03130B;
+  --bg-elevated:#FCFEFD;--knob:#FEFFFE;
+  --glass:rgb(252 254 253 / 0.68);--glass-edge:rgb(255 255 255 / 0.75);--shadow-k:1;--is-dark:0;
+}
+[data-gbtheme="berry"] {
+  --bg:#F9F3F5;--bg-raised:#FFFDFD;--bg-sunken:#F0E8EB;
+  --fill:rgb(33 22 26 / 0.065);--fill-strong:rgb(33 22 26 / 0.13);
+  --ink:#21161A;--ink-2:#5B4F53;--ink-3:#6F6367;
+  --line:rgb(33 22 26 / 0.13);--line-strong:#887D81;
+  --accent:#BB0F68;--accent-ink:#FFFAFC;--accent-soft:rgb(187 15 104 / 0.12);--accent-text:#BB0F68;
+  --good:#036C35;--warn:#865100;--bad:#B82105;--on-semantic:#FEFBFC;
+  --good-soft:rgb(3 108 53 / 0.12);--warn-soft:rgb(134 81 0 / 0.12);--bad-soft:rgb(184 33 5 / 0.12);
+  --points-text:#855905;--scrim:rgb(33 22 26 / 0.36);--shadow-rgb:58 40 47;
+  --bg-inverse:#21161A;--ink-inverse:#FCF9FA;--ink-inverse-2:#C5BBBE;--accent-inverse:#FC87B6;--accent-inverse-ink:#1A0A10;
+  --bg-elevated:#FFFDFD;--knob:#FFFEFE;
+  --glass:rgb(255 253 253 / 0.68);--glass-edge:rgb(255 255 255 / 0.75);--shadow-k:1;--is-dark:0;
+}
+[data-gbtheme="graphite"] {
+  --bg:#F3F5F7;--bg-raised:#FDFDFE;--bg-sunken:#E8EBEE;
+  --fill:rgb(22 26 30 / 0.065);--fill-strong:rgb(22 26 30 / 0.13);
+  --ink:#161A1E;--ink-2:#4F5358;--ink-3:#64676B;
+  --line:rgb(22 26 30 / 0.13);--line-strong:#7D8085;
+  --accent:#1E2227;--accent-ink:#FDFDFE;--accent-soft:rgb(30 34 39 / 0.08);--accent-text:#1E2227;
+  --good:#036C35;--warn:#865100;--bad:#BC0B20;--on-semantic:#FAFCFE;
+  --good-soft:rgb(3 108 53 / 0.08);--warn-soft:rgb(134 81 0 / 0.08);--bad-soft:rgb(188 11 32 / 0.08);
+  --points-text:#855905;--scrim:rgb(22 26 30 / 0.36);--shadow-rgb:41 46 53;
+  --bg-inverse:#161A1E;--ink-inverse:#F9FAFB;--ink-inverse-2:#BBBEC2;--accent-inverse:#ECEFF2;--accent-inverse-ink:#06101C;
+  --bg-elevated:#FDFDFE;--knob:#FEFEFF;
+  --glass:rgb(253 253 254 / 0.68);--glass-edge:rgb(255 255 255 / 0.75);--shadow-k:1;--is-dark:0;
+}
+/* ---- dark: system preference (unless the host or the user forces light) ---- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]), :root:not([data-theme="light"]) [data-gbtheme="ember"] {
+    --bg:#141211;--bg-raised:#221F1E;--bg-sunken:#0C0A09;
+    --fill:rgb(245 243 242 / 0.1);--fill-strong:rgb(245 243 242 / 0.19);
+    --ink:#F5F3F2;--ink-2:#BAB6B5;--ink-3:#95918F;
+    --line:rgb(245 243 242 / 0.16);--line-strong:#777472;
+    --accent:#FE8746;--accent-ink:#1A0B04;--accent-soft:rgb(254 135 70 / 0.17);--accent-text:#FE8746;
+    --good:#60DB89;--warn:#F7BC50;--bad:#FE7B90;--on-semantic:#170D08;
+    --good-soft:rgb(96 219 137 / 0.17);--warn-soft:rgb(247 188 80 / 0.17);--bad-soft:rgb(254 123 144 / 0.17);
+    --points-text:#F7C243;--scrim:rgb(0 0 0 / 0.56);--shadow-rgb:1 0 0;
+    --bg-inverse:#080605;--ink-inverse:#F5F3F2;--ink-inverse-2:#BAB6B5;--accent-inverse:#FE8746;--accent-inverse-ink:#1A0B04;
+    --bg-elevated:#423F3D;--knob:#ECEBEA;
+    --glass:rgb(34 31 30 / 0.62);--glass-edge:rgb(255 255 255 / 0.13);--shadow-k:2.4;--is-dark:1;
+  }
+  :root:not([data-theme="light"])[data-gbtheme="cobalt"], :root:not([data-theme="light"]) [data-gbtheme="cobalt"] {
+    --bg:#0F1319;--bg-raised:#1C2027;--bg-sunken:#080B10;
+    --fill:rgb(241 244 248 / 0.1);--fill-strong:rgb(241 244 248 / 0.19);
+    --ink:#F1F4F8;--ink-2:#B2B8C1;--ink-3:#8D929C;
+    --line:rgb(241 244 248 / 0.16);--line-strong:#6F757F;
+    --accent:#77AEFF;--accent-ink:#080F1C;--accent-soft:rgb(119 174 255 / 0.17);--accent-text:#77AEFF;
+    --good:#60DB89;--warn:#F7BC50;--bad:#FE7F78;--on-semantic:#0B0F18;
+    --good-soft:rgb(96 219 137 / 0.17);--warn-soft:rgb(247 188 80 / 0.17);--bad-soft:rgb(254 127 120 / 0.17);
+    --points-text:#F7C243;--scrim:rgb(0 0 0 / 0.56);--shadow-rgb:0 0 1;
+    --bg-inverse:#05070B;--ink-inverse:#F1F4F8;--ink-inverse-2:#B2B8C1;--accent-inverse:#77AEFF;--accent-inverse-ink:#080F1C;
+    --bg-elevated:#3B4048;--knob:#E8EBF0;
+    --glass:rgb(28 32 39 / 0.62);--glass-edge:rgb(255 255 255 / 0.13);--shadow-k:2.4;--is-dark:1;
+  }
+  :root:not([data-theme="light"])[data-gbtheme="pine"], :root:not([data-theme="light"]) [data-gbtheme="pine"] {
+    --bg:#0E1411;--bg-raised:#1A221E;--bg-sunken:#070C09;
+    --fill:rgb(240 245 242 / 0.1);--fill-strong:rgb(240 245 242 / 0.19);
+    --ink:#F0F5F2;--ink-2:#B1BAB4;--ink-3:#8B958F;
+    --line:rgb(240 245 242 / 0.16);--line-strong:#6D7771;
+    --accent:#4BDBA0;--accent-ink:#03130B;--accent-soft:rgb(75 219 160 / 0.17);--accent-text:#4BDBA0;
+    --good:#A0D157;--warn:#F7BC50;--bad:#FE7F78;--on-semantic:#08120C;
+    --good-soft:rgb(160 209 87 / 0.17);--warn-soft:rgb(247 188 80 / 0.17);--bad-soft:rgb(254 127 120 / 0.17);
+    --points-text:#F7C243;--scrim:rgb(0 0 0 / 0.56);--shadow-rgb:0 1 0;
+    --bg-inverse:#040805;--ink-inverse:#F0F5F2;--ink-inverse-2:#B1BAB4;--accent-inverse:#4BDBA0;--accent-inverse-ink:#03130B;
+    --bg-elevated:#39423D;--knob:#E8EDEA;
+    --glass:rgb(26 34 30 / 0.62);--glass-edge:rgb(255 255 255 / 0.13);--shadow-k:2.4;--is-dark:1;
+  }
+  :root:not([data-theme="light"])[data-gbtheme="berry"], :root:not([data-theme="light"]) [data-gbtheme="berry"] {
+    --bg:#171113;--bg-raised:#251D20;--bg-sunken:#0E090B;
+    --fill:rgb(247 242 243 / 0.1);--fill-strong:rgb(247 242 243 / 0.19);
+    --ink:#F7F2F3;--ink-2:#BEB4B8;--ink-3:#998F92;
+    --line:rgb(247 242 243 / 0.16);--line-strong:#7C7175;
+    --accent:#FC87B6;--accent-ink:#1A0A10;--accent-soft:rgb(252 135 182 / 0.17);--accent-text:#FC87B6;
+    --good:#60DB89;--warn:#F7BC50;--bad:#FD826A;--on-semantic:#160C10;
+    --good-soft:rgb(96 219 137 / 0.17);--warn-soft:rgb(247 188 80 / 0.17);--bad-soft:rgb(253 130 106 / 0.17);
+    --points-text:#F7C243;--scrim:rgb(0 0 0 / 0.56);--shadow-rgb:1 0 0;
+    --bg-inverse:#090507;--ink-inverse:#F7F2F3;--ink-inverse-2:#BEB4B8;--accent-inverse:#FC87B6;--accent-inverse-ink:#1A0A10;
+    --bg-elevated:#463D40;--knob:#EFE9EB;
+    --glass:rgb(37 29 32 / 0.62);--glass-edge:rgb(255 255 255 / 0.13);--shadow-k:2.4;--is-dark:1;
+  }
+  :root:not([data-theme="light"])[data-gbtheme="graphite"], :root:not([data-theme="light"]) [data-gbtheme="graphite"] {
+    --bg:#111315;--bg-raised:#1E2023;--bg-sunken:#090B0D;
+    --fill:rgb(242 243 245 / 0.1);--fill-strong:rgb(242 243 245 / 0.19);
+    --ink:#F2F3F5;--ink-2:#B5B8BB;--ink-3:#8F9296;
+    --line:rgb(242 243 245 / 0.16);--line-strong:#727579;
+    --accent:#ECEFF2;--accent-ink:#06101C;--accent-soft:rgb(236 239 242 / 0.17);--accent-text:#ECEFF2;
+    --good:#60DB89;--warn:#F7BC50;--bad:#FE7F78;--on-semantic:#091018;
+    --good-soft:rgb(96 219 137 / 0.17);--warn-soft:rgb(247 188 80 / 0.17);--bad-soft:rgb(254 127 120 / 0.17);
+    --points-text:#F7C243;--scrim:rgb(0 0 0 / 0.56);--shadow-rgb:0 0 1;
+    --bg-inverse:#050708;--ink-inverse:#F2F3F5;--ink-inverse-2:#B5B8BB;--accent-inverse:#ECEFF2;--accent-inverse-ink:#06101C;
+    --bg-elevated:#3D4043;--knob:#EAEBED;
+    --glass:rgb(30 32 35 / 0.62);--glass-edge:rgb(255 255 255 / 0.13);--shadow-k:2.4;--is-dark:1;
+  }
+}
+/* ---- dark: forced ---- */
+:root[data-theme="dark"], :root[data-theme="dark"] [data-gbtheme="ember"] {
+  --bg:#141211;--bg-raised:#221F1E;--bg-sunken:#0C0A09;
+  --fill:rgb(245 243 242 / 0.1);--fill-strong:rgb(245 243 242 / 0.19);
+  --ink:#F5F3F2;--ink-2:#BAB6B5;--ink-3:#95918F;
+  --line:rgb(245 243 242 / 0.16);--line-strong:#777472;
+  --accent:#FE8746;--accent-ink:#1A0B04;--accent-soft:rgb(254 135 70 / 0.17);--accent-text:#FE8746;
+  --good:#60DB89;--warn:#F7BC50;--bad:#FE7B90;--on-semantic:#170D08;
+  --good-soft:rgb(96 219 137 / 0.17);--warn-soft:rgb(247 188 80 / 0.17);--bad-soft:rgb(254 123 144 / 0.17);
+  --points-text:#F7C243;--scrim:rgb(0 0 0 / 0.56);--shadow-rgb:1 0 0;
+  --bg-inverse:#080605;--ink-inverse:#F5F3F2;--ink-inverse-2:#BAB6B5;--accent-inverse:#FE8746;--accent-inverse-ink:#1A0B04;
+  --bg-elevated:#423F3D;--knob:#ECEBEA;
+  --glass:rgb(34 31 30 / 0.62);--glass-edge:rgb(255 255 255 / 0.13);--shadow-k:2.4;--is-dark:1;
+}
+:root[data-theme="dark"][data-gbtheme="cobalt"], :root[data-theme="dark"] [data-gbtheme="cobalt"] {
+  --bg:#0F1319;--bg-raised:#1C2027;--bg-sunken:#080B10;
+  --fill:rgb(241 244 248 / 0.1);--fill-strong:rgb(241 244 248 / 0.19);
+  --ink:#F1F4F8;--ink-2:#B2B8C1;--ink-3:#8D929C;
+  --line:rgb(241 244 248 / 0.16);--line-strong:#6F757F;
+  --accent:#77AEFF;--accent-ink:#080F1C;--accent-soft:rgb(119 174 255 / 0.17);--accent-text:#77AEFF;
+  --good:#60DB89;--warn:#F7BC50;--bad:#FE7F78;--on-semantic:#0B0F18;
+  --good-soft:rgb(96 219 137 / 0.17);--warn-soft:rgb(247 188 80 / 0.17);--bad-soft:rgb(254 127 120 / 0.17);
+  --points-text:#F7C243;--scrim:rgb(0 0 0 / 0.56);--shadow-rgb:0 0 1;
+  --bg-inverse:#05070B;--ink-inverse:#F1F4F8;--ink-inverse-2:#B2B8C1;--accent-inverse:#77AEFF;--accent-inverse-ink:#080F1C;
+  --bg-elevated:#3B4048;--knob:#E8EBF0;
+  --glass:rgb(28 32 39 / 0.62);--glass-edge:rgb(255 255 255 / 0.13);--shadow-k:2.4;--is-dark:1;
+}
+:root[data-theme="dark"][data-gbtheme="pine"], :root[data-theme="dark"] [data-gbtheme="pine"] {
+  --bg:#0E1411;--bg-raised:#1A221E;--bg-sunken:#070C09;
+  --fill:rgb(240 245 242 / 0.1);--fill-strong:rgb(240 245 242 / 0.19);
+  --ink:#F0F5F2;--ink-2:#B1BAB4;--ink-3:#8B958F;
+  --line:rgb(240 245 242 / 0.16);--line-strong:#6D7771;
+  --accent:#4BDBA0;--accent-ink:#03130B;--accent-soft:rgb(75 219 160 / 0.17);--accent-text:#4BDBA0;
+  --good:#A0D157;--warn:#F7BC50;--bad:#FE7F78;--on-semantic:#08120C;
+  --good-soft:rgb(160 209 87 / 0.17);--warn-soft:rgb(247 188 80 / 0.17);--bad-soft:rgb(254 127 120 / 0.17);
+  --points-text:#F7C243;--scrim:rgb(0 0 0 / 0.56);--shadow-rgb:0 1 0;
+  --bg-inverse:#040805;--ink-inverse:#F0F5F2;--ink-inverse-2:#B1BAB4;--accent-inverse:#4BDBA0;--accent-inverse-ink:#03130B;
+  --bg-elevated:#39423D;--knob:#E8EDEA;
+  --glass:rgb(26 34 30 / 0.62);--glass-edge:rgb(255 255 255 / 0.13);--shadow-k:2.4;--is-dark:1;
+}
+:root[data-theme="dark"][data-gbtheme="berry"], :root[data-theme="dark"] [data-gbtheme="berry"] {
+  --bg:#171113;--bg-raised:#251D20;--bg-sunken:#0E090B;
+  --fill:rgb(247 242 243 / 0.1);--fill-strong:rgb(247 242 243 / 0.19);
+  --ink:#F7F2F3;--ink-2:#BEB4B8;--ink-3:#998F92;
+  --line:rgb(247 242 243 / 0.16);--line-strong:#7C7175;
+  --accent:#FC87B6;--accent-ink:#1A0A10;--accent-soft:rgb(252 135 182 / 0.17);--accent-text:#FC87B6;
+  --good:#60DB89;--warn:#F7BC50;--bad:#FD826A;--on-semantic:#160C10;
+  --good-soft:rgb(96 219 137 / 0.17);--warn-soft:rgb(247 188 80 / 0.17);--bad-soft:rgb(253 130 106 / 0.17);
+  --points-text:#F7C243;--scrim:rgb(0 0 0 / 0.56);--shadow-rgb:1 0 0;
+  --bg-inverse:#090507;--ink-inverse:#F7F2F3;--ink-inverse-2:#BEB4B8;--accent-inverse:#FC87B6;--accent-inverse-ink:#1A0A10;
+  --bg-elevated:#463D40;--knob:#EFE9EB;
+  --glass:rgb(37 29 32 / 0.62);--glass-edge:rgb(255 255 255 / 0.13);--shadow-k:2.4;--is-dark:1;
+}
+:root[data-theme="dark"][data-gbtheme="graphite"], :root[data-theme="dark"] [data-gbtheme="graphite"] {
+  --bg:#111315;--bg-raised:#1E2023;--bg-sunken:#090B0D;
+  --fill:rgb(242 243 245 / 0.1);--fill-strong:rgb(242 243 245 / 0.19);
+  --ink:#F2F3F5;--ink-2:#B5B8BB;--ink-3:#8F9296;
+  --line:rgb(242 243 245 / 0.16);--line-strong:#727579;
+  --accent:#ECEFF2;--accent-ink:#06101C;--accent-soft:rgb(236 239 242 / 0.17);--accent-text:#ECEFF2;
+  --good:#60DB89;--warn:#F7BC50;--bad:#FE7F78;--on-semantic:#091018;
+  --good-soft:rgb(96 219 137 / 0.17);--warn-soft:rgb(247 188 80 / 0.17);--bad-soft:rgb(254 127 120 / 0.17);
+  --points-text:#F7C243;--scrim:rgb(0 0 0 / 0.56);--shadow-rgb:0 0 1;
+  --bg-inverse:#050708;--ink-inverse:#F2F3F5;--ink-inverse-2:#B5B8BB;--accent-inverse:#ECEFF2;--accent-inverse-ink:#06101C;
+  --bg-elevated:#3D4043;--knob:#EAEBED;
+  --glass:rgb(30 32 35 / 0.62);--glass-edge:rgb(255 255 255 / 0.13);--shadow-k:2.4;--is-dark:1;
+}
+
+/* ---- increased contrast: hairlines become control-edge strength, tertiary text steps up, glass goes solid ---- */
+@media (prefers-contrast: more) {
+  :root[data-style][data-gbtheme][data-style][data-gbtheme] {
+    --line: var(--line-strong);
+    --ink-3: var(--ink-2);
+    --glass: var(--bg-raised);
+  }
+}

@@ -1,0 +1,55 @@
+/* Type. Display faces are for titles, numbers and short labels only; everything people read stays in --font-ui. */
+.t-large, .t-title {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-style: var(--display-style);
+  letter-spacing: var(--display-track);
+  text-transform: var(--display-case);
+  text-wrap: balance;
+}
+.t-large { font: var(--display-style) var(--display-weight) var(--t-large) var(--font-display); }
+.t-title { font: var(--display-style) var(--display-weight) var(--t-title) var(--font-display); }
+.t-headline { font: 600 var(--t-headline) var(--font-ui); letter-spacing: -0.01em; }
+.t-body { font: 400 var(--t-body) var(--font-ui); }
+.t-callout { font: 400 var(--t-callout) var(--font-ui); }
+.t-foot { font: 400 var(--t-foot) var(--font-ui); }
+.t-caption { font: 500 var(--t-caption) var(--font-ui); }
+.t-label {
+  font: var(--label-weight) var(--t-label) var(--font-label);
+  letter-spacing: var(--label-track);
+  text-transform: var(--label-case);
+}
+/* chart axis text: the Progress agent uses this (or the --chart-* tokens) for ticks and legends */
+.t-axis { font: 500 11px/14px var(--font-ui); color: var(--chart-axis); font-variant-numeric: tabular-nums; }
+
+/* numbers: always tabular, always the number face */
+.t-num {
+  font-family: var(--font-num);
+  font-weight: var(--num-weight);
+  font-style: var(--num-style);
+  letter-spacing: var(--num-track);
+  font-variant-numeric: tabular-nums;
+  font-size: calc(1em * var(--num-scale));
+  line-height: 1;
+}
+.t-num-m { font-size: calc(22px * var(--num-scale)); }
+.t-num-l { font-size: calc(32px * var(--num-scale)); }
+.t-num-xl { font-size: calc(48px * var(--num-scale)); }
+/* arcade: Jersey 15 stays on multiples of its 15px grid so the pixels stay square */
+[data-style="arcade"] .t-num-m { font-size: 30px; }
+[data-style="arcade"] .t-num-l { font-size: 45px; }
+[data-style="arcade"] .t-num-xl { font-size: 60px; }
+/* the italic display faces need room for descenders and the slant */
+[data-style="varsity"] .t-large, [data-style="varsity"] .t-title { padding-right: 0.08em; }
+
+.t-strong { font-weight: 600; }
+.c-ink { color: var(--ink); }
+.c-2 { color: var(--ink-2); }
+.c-3 { color: var(--ink-3); }
+.c-accent { color: var(--accent-text); }
+.c-good { color: var(--good); }
+.c-warn { color: var(--warn); }
+.c-bad { color: var(--bad); }
+.c-points { color: var(--points-text); }
+.t-center { text-align: center; }
+.t-truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
