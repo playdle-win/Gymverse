@@ -1,0 +1,4 @@
+node_modules/
+shots/
+dist/dev-*.html
+.DS_Store
