@@ -1,0 +1,86 @@
+/* Progress: layout only. Every colour, radius, weight and face comes from tokens, so one sheet serves all styles and themes. */
+
+.pg-tabular { font-variant-numeric: tabular-nums; }
+
+/* ---- Overview ---- */
+.pg-overview { display: flex; flex-direction: column; gap: 18px; }
+.pg-stats { display: flex; flex-direction: column; }
+.pg-stats > .gb-statrow + .gb-statrow { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+.pg-stats > .gb-statrow > .gb-stat { flex: 1 1 50%; min-width: 0; }
+.pg-stats .gb-stat__value { white-space: normal; }
+
+/* ---- Consistency ---- */
+.pg-level { display: flex; flex-direction: column; gap: 12px; }
+.pg-levels { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+.pg-levels__step { display: flex; flex-direction: column; gap: 6px; color: var(--ink-3); }
+.pg-levels__bar { height: 6px; border-radius: var(--r-pill); background: var(--fill-strong); }
+.pg-levels__step.is-reached .pg-levels__bar { background: var(--accent); }
+.pg-levels__step.is-current { color: var(--ink); }
+.pg-rate { display: inline-flex; align-items: baseline; gap: 4px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.pg-rate > .gb-points-glyph { align-self: center; }
+
+.pg-plot { display: flex; flex-direction: column; gap: 8px; padding-top: 6px; }
+.pg-plot__head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.pg-key { display: flex; align-items: center; gap: 8px; }
+.pg-key__line { flex: none; }
+
+.pg-next { display: flex; flex-direction: column; gap: 4px; padding-top: 14px; border-top: 1px solid var(--line); }
+.pg-facts { display: flex; flex-direction: column; }
+.pg-fact { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; }
+.pg-fact + .pg-fact { border-top: 1px solid var(--line); }
+.pg-fact__value { flex: none; display: flex; align-items: center; gap: 8px; }
+
+/* ---- Charts ---- */
+.pg-chart { position: relative; display: block; width: 100%; }
+.pg-chart > svg { display: block; overflow: visible; }
+.pg-chart__hit {
+  position: absolute; inset: 0;
+  border-radius: var(--r-s);
+  touch-action: pan-y; cursor: crosshair;
+  -webkit-tap-highlight-color: transparent;
+}
+.pg-chart__hit:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.pg-chart__grid { stroke: var(--chart-grid); stroke-width: 1; shape-rendering: crispEdges; }
+.pg-chart__tick { fill: var(--chart-axis); }
+.pg-chart__line {
+  fill: none; stroke: var(--chart-line);
+  stroke-width: calc(var(--bw) + 1px); stroke-linejoin: round; stroke-linecap: round;
+}
+.pg-chart__vertex { fill: var(--chart-line); stroke: var(--bg); stroke-width: 1.5; }
+.pg-chart__point { fill: var(--chart-line); stroke: var(--bg); stroke-width: 2.5; }
+.pg-chart__cursor { stroke: var(--ink-3); stroke-width: 1; shape-rendering: crispEdges; }
+.pg-chart__band { fill: var(--fill); }
+.pg-chart__bar { fill: var(--chart-line); rx: min(4px, var(--r-s)); }
+.pg-chart__bar--quiet { fill: var(--chart-muted); }
+.pg-chart__threshold { stroke: var(--ink-2); stroke-width: 1; stroke-dasharray: 4 3; shape-rendering: crispEdges; }
+
+.pg-spark { display: block; overflow: visible; }
+.pg-spark__line { fill: none; stroke: var(--chart-muted); stroke-width: 1.5; stroke-linejoin: round; stroke-linecap: round; }
+.pg-spark__end { fill: var(--chart-line); }
+
+/* ---- Muscle balance ---- */
+.pg-balance { display: flex; align-items: center; gap: 16px; }
+.pg-balance > .gbx { flex: none; --gbx-ground: var(--bg); }
+.pg-rank { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.pg-rank__row { display: grid; grid-template-columns: 78px minmax(0, 1fr) 34px; align-items: center; gap: 8px; min-height: 18px; }
+.pg-rank__row > :last-child { text-align: right; }
+.pg-rank__track { display: block; }
+.pg-rank__bar { display: block; height: 6px; min-width: 2px; border-radius: var(--r-pill); background: var(--chart-line); }
+
+.pg-callout { display: flex; flex-direction: column; gap: 4px; padding-top: 14px; border-top: 1px solid var(--line); }
+.pg-callout__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+/* ---- Rows: trailing figure, date block ---- */
+.pg-figure { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.pg-date { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 34px; color: var(--ink); }
+
+.pg-week { display: flex; flex-direction: column; gap: 8px; }
+.pg-week + .pg-week { margin-top: 10px; }
+.pg-week__head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding-inline: 2px; }
+
+/* ---- Exercise progress page ---- */
+.pg-detail { display: flex; flex-direction: column; gap: 16px; }
+.pg-readout { display: flex; flex-direction: column; gap: 2px; }
+.pg-readout__value { display: flex; align-items: baseline; gap: 6px; margin-bottom: 4px; }
+.pg-sets { display: flex; flex-wrap: wrap; gap: 0 12px; color: var(--ink-2); }
+.pg-sets__group { white-space: nowrap; }

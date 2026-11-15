@@ -121,7 +121,7 @@ function perp(a) {
 function capFaces(q) {
   const al = Math.hypot(q.axis[0], q.axis[1], q.axis[2]) || 1;
   const a = [q.axis[0] / al, q.axis[1] / al, q.axis[2] / al];
-  const [u, w] = perp(a), segs = 12, rings = Math.max(2, Math.ceil((q.a1 - q.a0) / 0.42));
+  const [u, w] = perp(a), segs = 16, rings = Math.max(2, Math.ceil((q.a1 - q.a0) / 0.3));
   const dir = (th, ph) => {
     const ct = Math.cos(th), st = Math.sin(th), c = Math.cos(ph) * st, s = Math.sin(ph) * st;
     return [a[0] * ct + u[0] * c + w[0] * s, a[1] * ct + u[1] * c + w[1] * s, a[2] * ct + u[2] * c + w[2] * s];

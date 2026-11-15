@@ -51,7 +51,6 @@ export function Stage({ move, t, size, tint, icon, label, rootRef }) {
     clip: `url(#${clipId})`,
     paint: icon ? unpainted : (m) => tint[m] && { class: `gbx-${tint[m]}` },
   };
-  const arms = <Parts list={side ? fig.arm : fig.arms} {...group} />;
   const box = icon ? [move.icon.box[0], move.icon.box[1], move.icon.box[2], move.icon.box[2]] : [0, 0, VIEW, VIEW];
   return (
     <svg ref={rootRef} class={icon ? 'gbx gbx-icon' : 'gbx'} style={{ '--gbx-size': size }} width={size} height={size} viewBox={box.join(' ')} role="img" aria-label={label}>
@@ -59,10 +58,9 @@ export function Stage({ move, t, size, tint, icon, label, rootRef }) {
       {!icon && <Floor shadow={scene.shadow} />}
       {scene.back}
       {side && <Parts list={fig.far} {...group} />}
-      {move.armsBehind && arms}
       <Parts list={fig.body} {...group} />
       {scene.mid}
-      {!move.armsBehind && arms}
+      <Parts list={side ? fig.arm : fig.arms} {...group} />
       {scene.front}
     </svg>
   );

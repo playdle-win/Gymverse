@@ -5,9 +5,10 @@
 import { render } from 'preact';
 import { useState, useRef, useEffect, useMemo } from 'preact/hooks';
 import {
-  GymCanvas, CATALOG, itemById, SHOWROOMS, DEFAULT_PALETTES, DEFAULT_AVATAR, STYLES, canPlaceIn,
+  GymCanvas, CATALOG, itemById, SHOWROOMS, DEFAULT_PALETTES, DEFAULT_AVATAR, STYLES,
   itemThumbUrl, avatarPortraitUrl, roomThumbUrl,
 } from '../src/gym/index.js';
+import { canPlace as roomAllows } from '../src/core/economy.js';
 
 const boot = window.__GB_BOOT__ || {};
 const prefersDark = () => (boot.appearance ? boot.appearance === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches);
@@ -59,7 +60,7 @@ function App() {
   const palette = s.dark ? DEFAULT_PALETTES.dark : DEFAULT_PALETTES.light;
   const guests = useMemo(() => AVATARS.slice(1, 1 + s.guests).map((avatar, i) => ({ id: 'g' + i, avatar })), [s.guests]);
   const insets = useMemo(() => ({ top: 98, bottom: s.mode === 'build' ? 76 : 12, left: 0, right: 0 }), [s.mode]);
-  const canPlace = (itemId, x, y, rot, ignore) => canPlaceIn(live.current.room, itemId, x, y, rot, ignore);
+  const canPlace = (itemId, x, y, rot, ignore) => roomAllows(live.current.room, itemById(itemId), x, y, rot, ignore);
 
   useEffect(() => {
     window.gymdev = {

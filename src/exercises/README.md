@@ -100,7 +100,6 @@ const dumbbellCurl = (() => {
       mid: <Dumbbell at={j.near.arm.hand} angle={j.near.arm.l} bold={bold} />,
     }),
     still: 0.24,                        // phase shown with reduced motion
-    // armsBehind: true                 // optional: near arm drawn behind the body (side hangs)
     icon: { t: 0.3, box: [20, 32, 116] },  // icon pose and square crop [x, y, size]
   };
 })();

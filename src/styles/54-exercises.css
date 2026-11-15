@@ -1,0 +1,24 @@
+/* Exercises: layout only; tokens for everything visual. */
+
+.ex-find { display: flex; flex-direction: column; gap: 6px; }
+.ex-find > :first-child { margin-bottom: 6px; }
+.ex-results { display: flex; flex-direction: column; gap: 8px; }
+.ex-results__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 34px; padding-inline: 2px; }
+
+/* ---- Detail ---- */
+.ex-intro { display: flex; flex-direction: column; gap: 16px; }
+.ex-hero { position: relative; display: grid; place-items: center; padding: 12px 0 8px; overflow: hidden; }
+.ex-hero__control { position: absolute; right: 8px; bottom: 8px; }
+
+.ex-muscles { display: flex; align-items: center; gap: 20px; }
+.ex-muscles > .gbx { flex: none; --gbx-ground: var(--bg); }
+.ex-muscles__names { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+.ex-muscles__names dt { display: flex; align-items: center; gap: 6px; }
+.gbx.ex-key { flex: none; border-radius: var(--r-s); --gbx-ground: var(--bg); }
+
+.ex-cues { display: flex; flex-direction: column; }
+.ex-cues__item { display: grid; grid-template-columns: 28px minmax(0, 1fr); align-items: baseline; gap: 8px; padding-block: 12px; }
+.ex-cues__item + .ex-cues__item { border-top: 1px solid var(--line); }
+
+.ex-gym { display: flex; flex-direction: column; gap: 8px; }
+.ex-gym__value { display: flex; align-items: baseline; gap: 10px; }

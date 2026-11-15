@@ -7,15 +7,13 @@
 //            hands that must follow the bar, a bar that must stay over the foot, and so on
 //   scene(j, k, bold)  equipment for the solved joints: { shadow: [cx, rx], back, mid, front };
 //            bold is 0 for the animation or the icon's line-weight factor
-//   armsBehind  optional: draw the near arm behind the body (a hang from the side, so the
-//            raised arm does not hide the head)
 //   still    phase shown when motion is reduced (mid-rep)
 //   icon     { t, box: [x, y, size] }  key pose and crop for the icon
 import { cycle } from './timeline.js';
 import { VIEW, GROUND, BODY, ARM, onTorso } from './rig.js';
 import { add, mul, dir, deg, clamp } from './math.js';
 import {
-  BENCH_TOP, Plate, BarEnd, Barbell, Dumbbell, Bench, Upright, PullUpRig, HangingBar, CableTower, CableRope, LegPress,
+  BENCH_TOP, Plate, BarEnd, Barbell, Dumbbell, Bench, Upright, IconGround, PullUpRig, HangingBar, CableTower, CableRope, LegPress,
 } from './equipment.jsx';
 
 const FLOOR = GROUND - BODY.ankle;
@@ -57,7 +55,7 @@ const backSquat = (() => {
   const rest = [-4.6, 27.4];
   const elbow = [-8, 15.4];
   const top = { hipY: FLOOR - 48, lean: 5 };
-  const bottom = { hipY: FLOOR - 19, lean: 44 };
+  const bottom = { hipY: FLOOR - 19, lean: 48 };
   return {
     view: 'side',
     seconds: 3.6,
@@ -76,7 +74,7 @@ const backSquat = (() => {
       shadow: [foot[0] + 4, 30],
       back: [
         !bold && <Upright x={foot[0] + 40} top={FLOOR - 88} hook={FLOOR - 72} face={-1} />,
-        <Plate at={j.near.arm.hand} bold={bold} />,
+        <Plate at={j.near.arm.hand} r={10.5} bold={bold} />,
       ],
       front: !bold && <BarEnd at={j.near.arm.hand} />,
     }),
@@ -137,10 +135,11 @@ const overheadPress = (() => {
     }),
     scene: (j, k, bold) => ({
       shadow: [CX, 30],
+      back: bold > 0 && <IconGround x={root[0] - 30} w={60} bold={bold} />,
       mid: <Barbell at={[root[0], k.bar]} bold={bold} />,
     }),
     still: 0.24,
-    icon: { t: 0.34, box: [7, 6, 132] },
+    icon: { t: 0.4, box: [5, 6, 136] },
   };
 })();
 
@@ -161,10 +160,10 @@ const pullUp = (() => {
     }),
     scene: (j, k, bold) => ({
       shadow: [CX, 24],
-      back: <PullUpRig x={bar[0]} half={52} y={bar[1]} bold={bold} />,
+      back: <PullUpRig x={bar[0]} half={bold ? 40 : 52} y={bar[1]} drop={108} bold={bold} />,
     }),
     still: 0.24,
-    icon: { t: 0.5, box: [19, 1, 108] },
+    icon: { t: 0.5, box: [9, 2, 128] },
   };
 })();
 
@@ -217,6 +216,7 @@ const dumbbellCurl = (() => {
 const cablePushdown = (() => {
   const hip = [38, FLOOR - 48];
   const pulley = [hip[0] + 36, 23];
+  const near = [pulley[0] - 8, pulley[1] + 7];   // the icon pulls the pulley in so the crop can be tight
   const high = { u: 5, l: 128, lean: 11 };
   const low = { u: 9, l: 15, lean: 13 };
   const slack = (hand) => Math.hypot(hand[0] - pulley[0], hand[1] - pulley[1]);
@@ -232,51 +232,54 @@ const cablePushdown = (() => {
     // The stack is geared 2:1, so it rises half as far as the rope travels.
     scene: (j, k, bold) => ({
       shadow: [hip[0] + 3, 26],
-      back: <CableTower x={hip[0] + 56} pulley={pulley} lift={(slack(j.near.arm.hand) - 50) / 2} bold={bold} />,
-      mid: <CableRope from={[pulley[0] - 3, pulley[1] + 1.4]} hand={j.near.arm.hand} bold={bold} />,
+      back: <CableTower x={hip[0] + 56} pulley={bold ? near : pulley} lift={(slack(j.near.arm.hand) - 50) / 2} bold={bold} />,
+      mid: <CableRope from={bold ? [near[0] - 2, near[1] - 2] : [pulley[0] - 3, pulley[1] + 1.4]} hand={j.near.arm.hand} bold={bold} />,
     }),
     still: 0.22,
-    icon: { t: 0.25, box: [8, 9, 130] },
+    icon: { t: 0.25, box: [-6, 26, 116] },
   };
 })();
 
 const legPress = (() => {
-  const hip = [50, GROUND - 25];
-  const recline = -50;
-  const rail = dir(135);
-  const out = { reach: 48 };
-  const deep = { reach: 29.5 };
+  const hip = [51, GROUND - 24];
+  const up = dir(135), across = dir(45);
+  const onRail = (x, y) => add(hip, add(mul(up, x), mul(across, y)));
+  const grip = [-9.5, -2];
+  const out = { reach: 47.5 };
+  const deep = { reach: 28 };
   return {
     view: 'side',
     seconds: 3.4,
     strokes: cycle(out, deep, { at: [0.04, 0.44, 0.54, 0.92] }),
+    // Back on the pad, feet flat on the plate: the ankles ride the rail, the knees follow.
     pose: (k) => ({
-      root: hip, spine: recline, head: 12,
-      arm: { to: [hip[0] + 5, hip[1] + 3.5] },
-      leg: { to: add(hip, mul(rail, k.reach)) },
+      root: hip, spine: -45, head: 6,
+      arm: { to: onRail(grip[0], grip[1]) },
+      leg: { to: onRail(k.reach, 0) },
       foot: 135,
     }),
     scene: (j, k, bold) => ({
       shadow: [CX + 6, 60],
-      back: <LegPress hip={hip} recline={recline} travel={k.reach} bold={bold} />,
+      back: <LegPress hip={hip} travel={k.reach} grip={grip} bold={bold} />,
     }),
     still: 0.25,
-    icon: { t: 0.3, box: [6, 42, 106] },
+    icon: { t: 0.1, box: [5, 46, 96] },
   };
 })();
 
 const hangingLegRaise = (() => {
   const bar = [60, 8];
-  const hang = { swing: 0, u: 5, l: 0, foot: -48 };
+  const hang = { swing: 0, u: 12, l: -26, foot: -36 };
   const raised = { swing: 9, u: 93, l: 87, foot: -12 };
   return {
     view: 'side',
     seconds: 3.4,
     strokes: cycle(hang, raised, { at: [0.06, 0.42, 0.54, 0.92], out: 'drive', back: 'lower' }),
     // The body swings as one piece about the hands; the hips drift back as the legs come up.
+    // The arms sit just behind the ears so the face stays clear of the near arm.
     pose: (k) => ({
-      root: bar, spine: k.swing, head: 6,
-      arm: { u: 180 - k.swing * 1.5, l: 181.5 - k.swing * 1.5 },
+      root: bar, spine: k.swing, head: 14,
+      arm: { u: 188 - k.swing * 1.5, l: 189.5 - k.swing * 1.5 },
       leg: { u: k.u, l: k.l },
       foot: k.foot,
       pin: { hand: bar },
@@ -284,8 +287,8 @@ const hangingLegRaise = (() => {
     scene: (j, k, bold) => ({
       shadow: [bar[0] + 4, 28],
       back: <HangingBar at={bar} post={bar[0] - 36} bold={bold} />,
+      front: !bold && <BarEnd at={bar} />,
     }),
-    armsBehind: true,
     still: 0.26,
     icon: { t: 0.5, box: [20, 0, 96] },
   };

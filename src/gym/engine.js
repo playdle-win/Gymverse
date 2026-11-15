@@ -9,7 +9,7 @@ import { avatarEntries, entriesDisplay } from './avatar.js';
 import { createCrowd } from './actor.js';
 import { fixtureSpots } from './roomlayer.js';
 import {
-  PIXEL_S, makeEnv, modelOf, describeRoom, variantOf, geometry, placedSolids, maskOf, maskHit, spot, drawSprite,
+  pixelFit, makeEnv, modelOf, describeRoom, variantOf, geometry, placedSolids, maskOf, maskHit, spot, drawSprite,
   paintRoom, paintLive, paintItem, paintShadow, actorShadow, gridSprite, footprintSprite,
 } from './scene.js';
 
@@ -27,7 +27,8 @@ export function createGymEngine(canvas, initial = {}) {
   const crowd = createCrowd(modelOf), motionQuery = typeof matchMedia === 'function' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
   let props = { ...DEFAULTS }, layout = null, fixtures = [], env = null, order = [];
   let cssW = 0, cssH = 0, dpr = 1, raf = 0, last = 0, clock = 0, tick = -1, dirty = true, visible = true, alive = true;
-  const cam = { cx: 0, cy: 0, z: 32, fitted: true, artS: 0, tween: null, settle: 0 };
+  // z = CSS pixels per unit. artS = scale the vector sprites were drawn at; pixS = arcade art pixels per unit.
+  const cam = { cx: 0, cy: 0, z: 32, fitted: true, artS: 0, pixS: 16, tween: null, settle: 0 };
   const moves = new Map();          // uid -> { x, y, rot }: live drags and commits the host has not echoed back yet
   let selected = null, ghost = null, drag = null, fx = [], puffs = [], motes = [];
   const pointers = new Map();
@@ -39,7 +40,7 @@ export function createGymEngine(canvas, initial = {}) {
   const valid = (itemId, x, y, rot, uid) => (props.canPlace ? !!props.canPlace(itemId, x, y, rot, uid) : true);
 
   // ---- camera ----------------------------------------------------------------------------------------
-  const pixelScale = (z = cam.z) => Math.max(1, Math.round((z * dpr) / PIXEL_S));
+  const pixelScale = (z = cam.z) => Math.max(1, Math.round((z * dpr) / cam.pixS));
   function roomBounds() {
     const { w, d } = props.room;
     return [-d - WALL_T - 0.1, -WALL_H * ZK - 0.45, w + WALL_T + 0.1, (w + d) / 2 + SLAB_T * ZK + 0.5];
@@ -50,15 +51,14 @@ export function createGymEngine(canvas, initial = {}) {
   }
   function fitView() {
     const b = roomBounds(), a = inner();
-    let z = Math.min(a.w / (b[2] - b[0]), a.h / (b[3] - b[1]));
-    if (pixel()) {
-      // whole art pixels only; measured against the bare room so a sliver of margin never costs a full step
-      const tight = Math.min((a.w + 16) / (props.room.w + props.room.d + WALL_T * 2), (a.h + 16) / (b[3] - b[1] - 0.7));
-      z = (Math.max(1, Math.floor((tight * dpr) / PIXEL_S + 0.02)) * PIXEL_S) / dpr;
-    }
-    return { cx: (b[0] + b[2]) / 2, cy: (b[1] + b[3]) / 2, z };
+    const z = Math.min(a.w / (b[2] - b[0]), a.h / (b[3] - b[1])), pix = pixel() ? pixelFit(z * dpr) : null;
+    return { cx: (b[0] + b[2]) / 2, cy: (b[1] + b[3]) / 2, z: pix ? (pix.s * pix.S) / dpr : z, pixS: pix ? pix.S : cam.pixS };
   }
-  function zoomRange() { const f = fitView().z; return pixel() ? [Math.max(PIXEL_S / dpr, f - PIXEL_S / dpr), f + (4 * PIXEL_S) / dpr] : [f * 0.8, Math.max(f * 3.2, 72)]; }
+  function zoomRange() {
+    if (!pixel()) { const f = fitView().z; return [f * 0.8, Math.max(f * 3.2, 72)]; }
+    const step = cam.pixS / dpr, fit = Math.max(1, Math.floor(fitView().z / step + 1e-6));
+    return [Math.max(1, fit - 1) * step, (fit + 4) * step];
+  }
   function clampCam() {
     const b = roomBounds(), [z0, z1] = zoomRange();
     cam.z = Math.min(z1, Math.max(z0, cam.z));
@@ -69,14 +69,14 @@ export function createGymEngine(canvas, initial = {}) {
     if (!props.room || !cssW) return;
     const to = fitView();
     cam.fitted = true;
-    if (animate && !reduced() && cam.artS) cam.tween = { from: { cx: cam.cx, cy: cam.cy, z: cam.z }, to, t: 0 };
+    if (animate && !reduced() && !pixel() && cam.artS) cam.tween = { from: { cx: cam.cx, cy: cam.cy, z: cam.z }, to, t: 0 };
     else { cam.tween = null; Object.assign(cam, to); settleArt(); }
     invalidate();
   }
   // Device-pixel transform of the current view: screen = o + unit * S (arcade: in low-res pixels, shown at scale s).
   function view() {
     const a = inner(), mx = (a.x + a.w / 2) * dpr, my = (a.y + a.h / 2) * dpr;
-    if (pixel()) { const s = pixelScale(); return { s, S: PIXEL_S, ox: Math.round(mx / s - cam.cx * PIXEL_S), oy: Math.round(my / s - cam.cy * PIXEL_S) }; }
+    if (pixel()) { const s = pixelScale(), S = cam.pixS; return { s, S, ox: Math.round(mx / s - cam.cx * S), oy: Math.round(my / s - cam.cy * S) }; }
     const S = cam.z * dpr, still = !cam.tween && !pinch && !cam.settle;
     return { s: 1, S, ox: still ? Math.round(mx - cam.cx * S) : mx - cam.cx * S, oy: still ? Math.round(my - cam.cy * S) : my - cam.cy * S };
   }
@@ -321,7 +321,7 @@ export function createGymEngine(canvas, initial = {}) {
     if (!press.moved) return;
     if (press.mode === 'item' && drag) dragTo(x, y);
     else if (press.mode === 'pan') {
-      const z = pixel() ? (pixelScale() * PIXEL_S) / dpr : cam.z;
+      const z = pixel() ? (pixelScale() * cam.pixS) / dpr : cam.z;
       cam.cx -= (x - press.lx) / z; cam.cy -= (y - press.ly) / z; cam.fitted = false; cam.tween = null; clampCam();
       invalidate();
     }
@@ -365,7 +365,7 @@ export function createGymEngine(canvas, initial = {}) {
     if (!props.room) return;
     ev.preventDefault();
     const [x, y] = local(ev);
-    if (pixel()) { if (Math.abs(ev.deltaY) > 2) zoomAt(x, y, ((pixelScale() + (ev.deltaY < 0 ? 1 : -1)) * PIXEL_S) / dpr); } else zoomAt(x, y, cam.z * Math.exp(-ev.deltaY * 0.0016));
+    if (pixel()) { if (Math.abs(ev.deltaY) > 2) zoomAt(x, y, ((pixelScale() + (ev.deltaY < 0 ? 1 : -1)) * cam.pixS) / dpr); } else zoomAt(x, y, cam.z * Math.exp(-ev.deltaY * 0.0016));
   }
 
   // ---- drawing ---------------------------------------------------------------------------------------
@@ -404,7 +404,7 @@ export function createGymEngine(canvas, initial = {}) {
       const t = f.t / f.dur;
       if (f.kind === 'land') s.lift = 0.1 * (1 - backOut(t));
       if (f.kind === 'pop') s.lift = (s.lift || 0) + 0.05 * Math.sin(t * Math.PI);
-      if (f.kind === 'shake') s.dx = Math.sin(t * 22) * (1 - t) * 0.09 * (pixel() ? PIXEL_S : cam.z * dpr);
+      if (f.kind === 'shake') s.dx = Math.sin(t * 22) * (1 - t) * 0.09 * (pixel() ? cam.pixS : cam.z * dpr);
     }
     return s;
   }
@@ -423,7 +423,7 @@ export function createGymEngine(canvas, initial = {}) {
   }
   function overlay(T) {
     if (props.mode !== 'build') return;
-    const grid = gridSprite(props.room.w, props.room.d, env);
+    const grid = gridSprite(props.room, env);
     drawSprite(T.g, grid, T.ox, T.oy, T.S / grid.S);
     for (const m of marks()) if (!isWallItem(m.def)) drawMark(T, m);
   }
@@ -493,15 +493,16 @@ export function createGymEngine(canvas, initial = {}) {
 
   function draw() {
     const v = view(), key = `${props.style}|${paletteKey(props.palette)}`;
-    if (!env || env.base !== key || env.dustIn !== props.dust || (!pixel() && Math.abs(env.S - cam.artS) > 0.005)) {
-      env = makeEnv(props.style, props.palette, props.dust, cam.artS || v.S);
+    const artS = pixel() ? cam.pixS : cam.artS || v.S;
+    if (!env || env.base !== key || env.dustIn !== props.dust || Math.abs(env.S - artS) > 0.005) {
+      env = makeEnv(props.style, props.palette, props.dust, artS);
       env.base = key; env.dustIn = props.dust;
     }
     if (pixel()) {
       const w = Math.ceil(canvas.width / v.s), h = Math.ceil(canvas.height / v.s);
       if (low.width !== w || low.height !== h) { low.width = w; low.height = h; }
       lowCtx.imageSmoothingEnabled = false;
-      const T = { g: lowCtx, S: PIXEL_S, ox: v.ox, oy: v.oy };
+      const T = { g: lowCtx, S: v.S, ox: v.ox, oy: v.oy };
       backdrop(T, w, h);
       if (props.room) drawScene(T);
       ctx.imageSmoothingEnabled = false;
@@ -588,7 +589,6 @@ export function createGymEngine(canvas, initial = {}) {
 
   update(initial);
   resize();
-  window.__dbg = { crowd, get layout() { return layout; }, get order() { return order; } };
 
   return {
     update, resize, refit, beginPlacement, commitPlacement, cancel, rotate, nudge, store,

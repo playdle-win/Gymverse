@@ -1,6 +1,6 @@
 // Shaders: turn a model colour + surface brightness into a fill for one of the three art directions.
 // A model colour is '#hex', a material name from MAT, or a palette token ('$accent', '$ink', ...).
-import { tone, mix, desat, luma } from './color.js';
+import { tone, mix, desat } from './color.js';
 
 export const STYLES = ['studio', 'arcade', 'varsity'];
 
@@ -23,7 +23,7 @@ export const INK = '#1c1b26';
 const LOOK = {
   studio: { shift: 0.35, sat: 1, cel: false, ink: null, levels: null },
   arcade: { shift: 0.6, sat: 1.04, cel: true, ink: INK, levels: [1.14, 0.93, 0.68], soft: 0.8 },
-  varsity: { shift: 0.45, sat: 1.18, cel: true, ink: '#15151b', levels: [1.07, 0.97, 0.66], soft: 0.78 },
+  varsity: { shift: 0.45, sat: 1.12, cel: true, ink: '#15151b', levels: [1.07, 0.97, 0.66], soft: 0.84 },
 };
 
 export function makeShader(style, palette, dust = 0) {
@@ -77,6 +77,3 @@ export function makeShader(style, palette, dust = 0) {
     },
   };
 }
-
-// Readable ink on top of a colour (labels painted on items).
-export const inkOn = (c) => (luma(c) > 0.6 ? '#22232a' : '#f4f2ec');

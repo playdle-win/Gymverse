@@ -195,7 +195,7 @@ export function createCrowd(modelOf, seed = 11) {
       people.forEach((p, i) => {
         let a = actors.find((o) => o.id === p.id);
         if (!a) {
-          a = { id: p.id, main: !!p.main, x: room.w * 0.62 + i * 0.9, y: room.d * 0.62 + (i % 2), yaw: i % 2 ? 4.2 : 5.3, look: 0, lookTo: 0, lookIn: 1 + rand() * 3, blinkIn: 1 + rand() * 3, t: 0, skel: null, fresh: true };
+          a = { id: p.id, main: !!p.main, x: room.w * 0.3 + i * 1.7, y: room.d * 0.7 + (i % 2) * 1.5, yaw: i % 2 ? 4.2 : 5.3, look: 0, lookTo: 0, lookIn: 1 + rand() * 3, blinkIn: 1 + rand() * 3, t: 0, skel: null, fresh: true };
           actors.push(a);
         }
         a.avatar = p.avatar;

@@ -87,10 +87,10 @@ const speaker = [
 ];
 
 export const DECOR_MODELS = {
-  'plant-monstera': { prims: plant },
+  'plant-monstera': { prims: plant, webs: [] },
   'mirror-wall': { prims: mirror },
   'poster-lift': { prims: poster },
-  'cooler-water': { prims: cooler },
+  'cooler-water': { prims: cooler, webs: [[[0.3, 0.702, 0.78], [0.3, 0.702, 0.4], [0.64, 0.702, 0.78]]] },
   'mat-floor': { prims: mat },
   'speaker-boom': { prims: speaker },
 };

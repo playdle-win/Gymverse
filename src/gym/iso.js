@@ -7,18 +7,11 @@ export const WALL_H = 2.6;          // wall height in tiles
 export const WALL_T = 0.16;         // wall thickness
 export const SLAB_T = 0.22;         // visible floor slab thickness
 
-export const sx = (x, y) => x - y;
-export const sy = (x, y, z) => (x + y) * 0.5 - z * ZK;
-
 // Screen unit point -> floor position (z = 0).
 export const floorAt = (ux, uy) => [uy + ux * 0.5, uy - ux * 0.5];
 
-// Facing vectors for rot / face 0..3.
-export const DIRS = [[0, 1], [-1, 0], [0, -1], [1, 0]];
-
-export const rotSize = (size, rot) => (rot & 1 ? [size[1], size[0]] : [size[0], size[1]]);
-
 // Rotate a point inside a w x d footprint by rot quarter turns; the result lies in the rotated footprint.
+// Facing vectors turn the same way: rot 0 faces +y, 1 faces -x, 2 faces -y, 3 faces +x.
 export function rotPoint(px, py, w, d, rot) {
   switch (rot & 3) {
     case 1: return [d - py, px];
@@ -36,8 +29,6 @@ export function rotVec(vx, vy, rot) {
     default: return [vx, vy];
   }
 }
-
-export const isWallSpot = (it) => it.x === -1 || it.y === -1;
 
 // Deterministic pseudo random numbers so finishes, dust and behaviour never flicker between frames.
 export function rng(seed) {

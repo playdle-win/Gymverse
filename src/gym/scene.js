@@ -11,10 +11,24 @@ import { EQUIPMENT_MODELS } from './models.js';
 import { DECOR_MODELS } from './models-decor.js';
 import { roomGroups, fixtureGroups } from './roomlayer.js';
 import { itemWebOps } from './dust.js';
+import { floorFinish } from './finishes.js';
+import { luma } from './color.js';
 import { DEFAULT_PALETTES, paletteKey } from './palette.js';
 
 export const MODELS = { ...EQUIPMENT_MODELS, ...DECOR_MODELS };
-export const PIXEL_S = 16;                     // arcade: art pixels per unit (a tile is 32 x 16)
+export const PIXEL_S = 16;                     // hit masks and the default arcade resolution: art pixels per unit
+
+// Arcade resolution for a wanted size of zDev device pixels per unit: art pixels per unit S (even, so tiles stay
+// clean 2:1 diamonds) shown at a whole-number scale s. Prefers filling the space, then staying near 16.
+export function pixelFit(zDev) {
+  let best = { s: 1, S: 12, score: -1 };
+  for (let s = 1; s <= 12; s++) for (let S = 12; S <= 22; S += 2) {
+    if (s * S > zDev + 1e-6) continue;
+    const score = (s * S) / zDev - Math.abs(S - PIXEL_S) * 0.012;
+    if (score > best.score) best = { s, S, score };
+  }
+  return best;
+}
 const crates = new Map();
 // Unknown ids still draw: a plain crate sized to the footprint, so a missing model is obvious but harmless.
 export function modelOf(def) {
@@ -31,11 +45,12 @@ export const dustStep = (dust) => Math.round(Math.max(0, Math.min(1, dust || 0))
 
 // Everything a sprite depends on besides its own identity.
 export function makeEnv(style, palette, dust, S) {
-  const pixel = style === 'arcade', step = dustStep(dust), scale = pixel ? PIXEL_S : Math.round(S * 100) / 100;
+  const pixel = style === 'arcade', step = dustStep(dust), scale = pixel ? Math.round(S) : Math.round(S * 100) / 100;
   const sh = makeShader(style, palette, step);
   return {
     style, pixel, sh, S: scale, palette, dust: step, key: `${style}|${paletteKey(palette)}|${step}|${scale}`,
-    st: style === 'varsity' ? { ink: sh.ink, outW: Math.max(0.075, 3 / scale), inW: Math.max(0.03, 1.3 / scale), hardBlobs: true } : { seam: true },
+    // ink widths in units: constant on screen-sized rooms, never below a hairline, never swallowing a thumbnail
+    st: style === 'varsity' ? { ink: sh.ink, outW: Math.min(0.12, Math.max(0.075, 1.6 / scale)), inW: Math.min(0.05, Math.max(0.03, 0.8 / scale)), hardBlobs: true } : { seam: true },
   };
 }
 
@@ -61,8 +76,8 @@ function newCanvas(w, h) {
 // display origin, in pixels at scale S. opts.blend keeps real alpha and skips outlines (overlays, shadows).
 export function renderGroups(groups, env, opts = {}) {
   if (env.pixel) {
-    const r = rasterGroups(groups, PIXEL_S, { ink: opts.blend ? null : env.sh.ink, blend: opts.blend });
-    return { canvas: r.canvas, x: r.x, y: r.y, S: PIXEL_S };
+    const r = rasterGroups(groups, env.S, { ink: opts.blend ? null : env.sh.ink, blend: opts.blend });
+    return { canvas: r.canvas, x: r.x, y: r.y, S: env.S };
   }
   const S = opts.S || env.S, [x0, y0, x1, y1] = extent(groups), pad = Math.ceil((env.st.outW || 0) * S) + 2;
   const ox = Math.ceil(-x0 * S) + pad, oy = Math.ceil(-y0 * S) + pad;
@@ -175,12 +190,12 @@ export function roomSprite(room, env) {
 
 export const fixtureSprite = (kind, env) => cached(`f|${env.key}|${kind}`, () => renderGroups(fixtureGroups(kind, env.sh), env));
 
-// Build-mode grid for a w x d floor.
-export function gridSprite(w, d, env) {
-  return cached(`g|${env.key}|${w}x${d}`, () => {
-    const ops = [], c = env.palette.dark || env.style === 'arcade' ? '#ffffff' : '#101018', lw = env.pixel ? 0.01 : 0.03;
-    for (let x = 0; x <= w; x++) ops.push({ t: 1, p: [...P2(x, 0, 0), ...P2(x, d, 0)], f: c, w: lw, al: 0.3 });
-    for (let y = 0; y <= d; y++) ops.push({ t: 1, p: [...P2(0, y, 0), ...P2(w, y, 0)], f: c, w: lw, al: 0.3 });
+// Build-mode grid for a room's floor: light lines on dark floors, dark lines on light ones.
+export function gridSprite(room, env) {
+  return cached(`g|${env.key}|${room.w}x${room.d}|${room.floor}`, () => {
+    const { w, d } = room, ops = [], c = luma(floorFinish(room.floor).edge) < 0.45 ? '#ffffff' : '#14131c', lw = env.pixel ? 0.01 : 0.03;
+    for (let x = 0; x <= w; x++) ops.push({ t: 1, p: [...P2(x, 0, 0), ...P2(x, d, 0)], f: c, w: lw, al: 0.34 });
+    for (let y = 0; y <= d; y++) ops.push({ t: 1, p: [...P2(0, y, 0), ...P2(w, y, 0)], f: c, w: lw, al: 0.34 });
     return renderGroups([{ ops, ink: false }], env, { blend: true });
   });
 }
@@ -248,7 +263,7 @@ const RING = [[1, 0], [-1, 0], [0, 1], [0, -1], [0.7, 0.7], [-0.7, 0.7], [0.7, -
 // Paint dynamic display groups (avatars, equipment in use) straight onto the target.
 export function paintLive(T, env, groups) {
   if (env.pixel) {
-    const r = rasterGroups(groups, PIXEL_S, { ink: env.sh.ink });
+    const r = rasterGroups(groups, env.S, { ink: env.sh.ink });
     T.g.drawImage(r.canvas, T.ox + r.x, T.oy + r.y);
   } else paintGroups(T.g, groups, T.S, T.ox, T.oy, env.st);
 }
@@ -259,8 +274,11 @@ export function paintItem(T, env, e, s = {}) {
   const [X0, Y] = e.variant === 'R' ? spot(T, e.it.x, 0) : e.variant === 'L' ? spot(T, 0, e.it.y) : spot(T, e.it.x, e.it.y);
   const X = X0 + (s.dx || 0), lift = (s.lift || 0) * ZK * T.S;
   if (s.selected) {
-    const ring = tinted(sp, s.selected), o = env.pixel ? 1 : Math.max(2, Math.round(T.S * 0.05));
-    for (const [dx, dy] of RING) drawSprite(g, ring, X + Math.round(dx * o), Y + Math.round(dy * o), k, lift);
+    // a white halo under the coloured ring keeps the selection readable on any floor or item colour
+    const o = env.pixel ? 1 : Math.max(2, Math.round(T.S * 0.045));
+    for (const [ring, r] of [[tinted(sp, '#ffffff'), o * 2], [tinted(sp, s.selected), o]]) {
+      for (const [dx, dy] of RING) drawSprite(g, ring, X + Math.round(dx * r), Y + Math.round(dy * r), k, lift);
+    }
   }
   if (s.alpha != null) g.globalAlpha = s.alpha;
   drawSprite(g, sp, X, Y, k, lift);

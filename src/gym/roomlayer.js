@@ -47,7 +47,7 @@ export function roomGroups(room, sh, dust = 0, floorOnly = false) {
     floor.tile(planePainter(sh, ops, (u, v) => [tx + u, ty + v, 0], 1, [-tx, -ty, w - tx, d - ty], hash2(tx, ty, seed)), tx, ty);
   }
   const lightR = Math.min(w, d) * 0.55;
-  if (sh.style !== 'arcade') planePainter(sh, ops, (u, v) => [u, v, 0], 1, [0, 0, w, d], 1).blob(w / 2, d / 2, lightR, '#fff2cf', sh.style === 'studio' ? 0.2 : 0.1);
+  if (sh.style === 'studio') planePainter(sh, ops, (u, v) => [u, v, 0], 1, [0, 0, w, d], 1).blob(w / 2, d / 2, lightR, '#fff2cf', 0.2);
   roomDust(room, sh, ops, dust, 'floor', seed);
   if (floorOnly) return { under: [], base: [{ ops, ink: 'edge' }] };
 
@@ -56,6 +56,11 @@ export function roomGroups(room, sh, dust = 0, floorOnly = false) {
   roomDust(room, sh, ops, dust, 'walls', seed);
   ambient(room, sh, ops);
   quad([[-WALL_T, -WALL_T, WALL_H], [w, -WALL_T, WALL_H], [w, 0, WALL_H], [0, 0, WALL_H], [0, d, WALL_H], [-WALL_T, d, WALL_H]], wall.cap, 1.04);
+  if (sh.style === 'arcade') {
+    // the cap is only a pixel or two thick: back it with solid lines so it never breaks up
+    const top = (a, b) => ops.push({ t: 1, p: [...P2(...a), ...P2(...b)], f: sh.flat(wall.cap, 1.04), w: 0.12 });
+    top([0, -WALL_T / 2, WALL_H], [w, -WALL_T / 2, WALL_H]); top([-WALL_T / 2, 0, WALL_H], [-WALL_T / 2, d, WALL_H]);
+  }
   roomDust(room, sh, ops, dust, 'webs', seed);
 
   const under = [];
@@ -81,7 +86,7 @@ export function fixtureSpots(room) {
 const DROP = 2.16;
 // The only fixture so far is the bare bulb of the starter walls.
 export function fixtureGroups(kind, sh) {
-  const prims = [rod([0, 0, WALL_H + 0.6], [0, 0, DROP + 0.2], 0.008, 'black'), cyl(0, 0, DROP + 0.09, 0.045, 0.11, 'iron'), ball(0, 0, DROP, 0.1, 'lamp')];
+  const prims = [rod([0, 0, WALL_H + 0.6], [0, 0, DROP + 0.2], 0.008, 'black', { ink: false }), cyl(0, 0, DROP + 0.09, 0.045, 0.11, 'iron'), ball(0, 0, DROP, 0.1, 'lamp')];
   const c = P2(0, 0, DROP);
   const halo = { ops: [{ t: 2, m: [1, 0, 0, 1, c[0], c[1]], r: sh.style === 'studio' ? 0.75 : 0.42, f: '#ffe9a6', al: sh.style === 'studio' ? 0.38 : 0.3 }], ink: false };
   return [halo, ...display(solids(prims), sh)];

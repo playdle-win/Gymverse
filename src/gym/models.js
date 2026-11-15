@@ -4,7 +4,7 @@
 // anchors: z = height of the surface the avatar sits/lies/stands on; grip = [left, right] hand points at rest;
 //          rail = [dy, dz] travel direction for sled machines.
 // part tags: 'load' follows the pose's load offset; 'gripL' / 'gripR' follow each hand.
-import { box, cyl, prism, rod, poly, line, shift } from './kit.js';
+import { box, cyl, prism, wedge, rod, poly, line, shift } from './kit.js';
 
 const FRAME = 'gunmetal', DARK = 'iron';
 
@@ -161,7 +161,7 @@ const treadmill = [
   box(0.2, 0.16, 0.1, 0.6, 1.34, 0.035, 'rubber'),
   ...[0.4, 0.7, 1.0, 1.3].map((y) => line([[0.24, y, 0.136], [0.76, y, 0.136]], '#484b54', 0.014)),
   box(0.12, 0.16, 0.1, 0.08, 1.34, 0.05, 'silver'), box(0.8, 0.16, 0.1, 0.08, 1.34, 0.05, 'silver'),
-  prism('x', 0.12, 0.76, [[1.48, 0.1], [1.86, 0.1], [1.86, 0.22], [1.62, 0.28], [1.48, 0.2]], 'charcoal'),
+  wedge(0.12, 1.46, 0.1, 0.76, 0.4, 0.07, 0.17, 'charcoal'),
   poly([[0.12, 1.861, 0.13], [0.88, 1.861, 0.13], [0.88, 1.861, 0.18], [0.12, 1.861, 0.18]], '$accent', { b: 0.7 }),
   rod([0.18, 1.74, 0.22], [0.18, 1.82, 1.2], 0.034, 'silver'), rod([0.82, 1.74, 0.22], [0.82, 1.82, 1.2], 0.034, 'silver'),
   rod([0.18, 1.8, 1.04], [0.18, 1.3, 0.99], 0.03, 'rubber', { shadow: false }), rod([0.82, 1.8, 1.04], [0.82, 1.3, 0.99], 0.03, 'rubber', { shadow: false }),
@@ -171,13 +171,14 @@ const treadmill = [
   line([[0.58, 1.767, 1.25], [0.72, 1.767, 1.25]], '$accent', 0.024, { m: 'glow' }),
 ];
 
+// webs: where cobwebs grow when the gym gets dusty, as [apex, end, end] triangles in real corners of the model.
 export const EQUIPMENT_MODELS = {
-  'bench-worn': { prims: benchWorn, anchors: { z: 0.33 } },
-  'bench-flat': { prims: benchFlat, anchors: { z: 0.38, grip: [[0.7, 0.515, 1.0], [1.3, 0.515, 1.0]] } },
-  'rack-squat': { prims: rackSquat, anchors: { z: 0, grip: [[0.68, 0.47, 0.965], [1.32, 0.47, 0.965]] } },
-  'rack-dumbbells': { prims: rackDumbbells, anchors: { z: 0 } },
-  'station-pullup': { prims: stationPullup, anchors: { z: 0, grip: [[0.26, 0.57, 2.01], [0.74, 0.57, 2.01]] } },
-  'machine-cable': { prims: machineCable, anchors: { z: 0, grip: [[0.14, 0.72, 1.27], [0.86, 0.72, 1.27]] } },
-  'machine-legpress': { prims: machineLegpress, anchors: { z: 0.24, rail: RAIL } },
-  treadmill: { prims: treadmill, anchors: { z: 0.135 } },
+  'bench-worn': { prims: benchWorn, anchors: { z: 0.33 }, webs: [[[0.74, 0.3, 0.27], [0.74, 0.3, 0.02], [0.74, 0.9, 0.25]]] },
+  'bench-flat': { prims: benchFlat, anchors: { z: 0.38, grip: [[0.7, 0.515, 1.0], [1.3, 0.515, 1.0]] }, webs: [[[1.06, 1.7, 0.27], [1.06, 1.7, 0.04], [1.06, 1.15, 0.27]]] },
+  'rack-squat': { prims: rackSquat, anchors: { z: 0, grip: [[0.68, 0.47, 0.965], [1.32, 0.47, 0.965]] }, webs: [[[0.43, 0.378, 1.76], [0.43, 0.378, 1.25], [0.95, 0.378, 1.76]]] },
+  'rack-dumbbells': { prims: rackDumbbells, anchors: { z: 0 }, webs: [[[1.935, 0.14, 0.84], [1.935, 0.14, 0.42], [1.935, 0.5, 0.44]]] },
+  'station-pullup': { prims: stationPullup, anchors: { z: 0, grip: [[0.26, 0.57, 2.01], [0.74, 0.57, 2.01]] }, webs: [[[0.14, 0.262, 0.4], [0.14, 0.262, 0.07], [0.52, 0.262, 0.4]]] },
+  'machine-cable': { prims: machineCable, anchors: { z: 0, grip: [[0.14, 0.72, 1.27], [0.86, 0.72, 1.27]] }, webs: [[[0.18, 0.322, 2.0], [0.18, 0.322, 1.5], [0.62, 0.322, 2.0]]] },
+  'machine-legpress': { prims: machineLegpress, anchors: { z: 0.24, rail: RAIL }, webs: [[[0.55, 1.882, 1.0], [0.55, 1.882, 0.5], [1.02, 1.882, 1.0]]] },
+  treadmill: { prims: treadmill, anchors: { z: 0.135 }, webs: [[[0.2, 1.9, 1.14], [0.2, 1.84, 0.66], [0.6, 1.9, 1.14]]] },
 };

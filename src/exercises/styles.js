@@ -2,7 +2,9 @@
 // Every colour derives from the design tokens; nothing is hard-coded except token fallbacks.
 // Tones are mixed with color-mix so they stay opaque: overlapping limbs must not show seams.
 // Each --gbx-t-* is how much ink goes into a tone; dark appearance swaps the amounts so the
-// mannequin stays a mid grey with darker hair and iron on either ground.
+// mannequin stays a mid grey with darker hair and iron on either ground. Iron stays a mid tone,
+// never near ink, so plates cannot be mistaken for a tinted muscle in a neutral (graphite) theme;
+// icons soften the accent on equipment for the same reason.
 // Style knobs are set on the [data-style] scope (the root or any subtree, like the tokens) and
 // inherited: outline weight limits, edge rendering, stepped motion, floor colour. The outline is
 // --bw scaled with the rendered size (--gbx-size, set inline by the components) so the line
@@ -13,8 +15,8 @@ const DARK_TONES = '--gbx-t-body:50%;--gbx-t-near:59%;--gbx-t-far:36%;--gbx-t-ha
 export const EXERCISE_CSS = `
 .gbx{display:block;flex:none;overflow:hidden;
 --gbx-ground:var(--bg-raised,#fff);--gbx-ink:var(--ink,#1c1c1e);--gbx-pri:var(--accent,#f2541b);
---gbx-t-body:26%;--gbx-t-near:34%;--gbx-t-far:17%;--gbx-t-hair:64%;--gbx-t-zone:36%;
---gbx-t-steel:52%;--gbx-t-iron:80%;--gbx-t-frame:14%;--gbx-t-pad:44%;--gbx-t-well:22%;
+--gbx-t-body:26%;--gbx-t-near:34%;--gbx-t-far:17%;--gbx-t-hair:70%;--gbx-t-zone:36%;
+--gbx-t-steel:45%;--gbx-t-iron:58%;--gbx-t-frame:14%;--gbx-t-pad:48%;--gbx-t-well:20%;
 --gbx-body:color-mix(in srgb,var(--gbx-ink) var(--gbx-t-body),var(--gbx-ground));
 --gbx-near:color-mix(in srgb,var(--gbx-ink) var(--gbx-t-near),var(--gbx-ground));
 --gbx-far:color-mix(in srgb,var(--gbx-ink) var(--gbx-t-far),var(--gbx-ground));
@@ -61,7 +63,9 @@ shape-rendering:var(--gbx-render,auto)}
 .gbx-shadow{fill:var(--gbx-shade,var(--fill,rgba(120,120,128,.14)))}
 .gbx-icon{--gbx-body:var(--gbx-ink);--gbx-near:var(--gbx-ink);--gbx-hair:var(--gbx-ink);
 --gbx-far:color-mix(in srgb,var(--gbx-ink) 50%,var(--gbx-ground));
---gbx-steel:var(--gbx-pri);--gbx-iron:var(--gbx-pri);--gbx-pad:var(--gbx-pri);--gbx-frame:var(--gbx-pri);--gbx-sw:0px}
+--gbx-gear:color-mix(in srgb,var(--gbx-pri) 76%,var(--gbx-ground));
+--gbx-steel:var(--gbx-gear);--gbx-iron:var(--gbx-gear);--gbx-pad:var(--gbx-gear);--gbx-frame:var(--gbx-gear);--gbx-sw:0px}
+.gbx-icon .gbx-floor{fill:var(--gbx-far)}
 `;
 
 const STYLE_ID = 'gbx-styles';

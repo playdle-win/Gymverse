@@ -31,7 +31,7 @@ export function webOps(apex, a, b, colour, grow = 1) {
 export const webColour = (surface) => (luma(surface) > 0.55 ? '#6e6a63' : '#e6e6ec');
 
 function bunny(P, u, v, s, light) {
-  const body = light ? '#b9b2a2' : '#8f897b', shade = light ? '#8d8778' : '#6d685d';
+  const body = light ? '#c9c3b3' : '#aca697', shade = light ? '#8f897a' : '#7c776b';
   const puff = (du, dv, r, c) => { const pts = []; for (let i = 0; i < 9; i++) { const a = (i / 9) * Math.PI * 2, rr = r * (0.8 + P.rnd() * 0.4); pts.push([u + du + Math.cos(a) * rr, v + dv + Math.sin(a) * rr]); } P.fill(pts, c); };
   puff(0.02 * s, 0.02 * s, 0.085 * s, shade);
   puff(0, 0, 0.075 * s, body);
