@@ -269,12 +269,12 @@ function exerciseTrends(workouts, bodyKg, start) {
 function ExerciseTrends({ workouts, bodyKg, period, t }) {
   const trends = exerciseTrends(workouts, bodyKg, periodStart(period, t));
   const changeText = (trend) => {
-    if (!trend.sessions) return 'No sessions';
-    if (trend.change === null) return 'First session';
+    if (!trend.sessions) return 'No workouts';
+    if (trend.change === null) return 'First workout';
     return signedKg(trend.change) || 'No change';
   };
   return (
-    <Section title="Exercises" footnote={`Estimated 1RM from your latest session, with its change over ${period.phrase}.`}>
+    <Section title="Exercises" footnote={`Estimated 1RM from your latest workout, with its change over ${period.phrase}.`}>
       <List>
         {trends.map((trend) => (
           <ListRow key={trend.exercise.id}

@@ -47,6 +47,8 @@ export function WorkoutCover() {
   // A discarded session keeps its last frame while the cover slides away.
   const last = useRef(active);
   if (active) last.current = active;
+  // The workout can end from outside the session (the test lab resets to day one): close the cover with it.
+  useEffect(() => { if (!active && !summary) nav.dismiss(); }, [active, summary]);
   if (summary) return <Summary workout={summary.workout} before={summary.before} />;
   return last.current ? <Session active={last.current} onFinished={setSummary} /> : null;
 }
@@ -293,7 +295,7 @@ function Session({ active, onFinished }) {
       </Sheet>
       <Sheet open={menuOpen} onClose={() => setMenuOpen(false)} title="Workout" detents={['auto']}>
         <List variant="plain">
-          <ListRow icon="trash" tone="bad" title="Discard workout" subtitle="Nothing from this session is saved" onClick={discard} />
+          <ListRow icon="trash" tone="bad" title="Discard workout" subtitle="Nothing from this workout is saved" onClick={discard} />
         </List>
       </Sheet>
 

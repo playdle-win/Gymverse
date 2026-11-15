@@ -95,7 +95,7 @@ export function LineChart({ points, selected, onSelect, summary, valueText, heig
           <circle class="pg-chart__point" cx={xs[active]} cy={y(points[active].v)} r="5.5" />
         </svg>
       )}
-      <div class="pg-chart__hit" data-testid="chart-scrub" {...scrubProps({ count: n, selected, onSelect, indexAt, label: 'Session', valueText: valueText(active) })} />
+      <div class="pg-chart__hit" data-testid="chart-scrub" {...scrubProps({ count: n, selected, onSelect, indexAt, label: 'Workout', valueText: valueText(active) })} />
     </figure>
   );
 }

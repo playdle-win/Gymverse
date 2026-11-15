@@ -84,7 +84,7 @@ function YourNumbers({ exercise }) {
         </StatRow>
         <StatRow>
           <Stat value={timeAgo(latest.t)} label="Last performed" />
-          <Stat value={series.length} label={series.length === 1 ? 'Session' : 'Sessions'} />
+          <Stat value={series.length} label={series.length === 1 ? 'Workout' : 'Workouts'} />
         </StatRow>
       </div>
       <List>
@@ -117,7 +117,7 @@ function InYourGym({ exercise }) {
           {value > 1 && `Points you earn on ${exercise.name} are multiplied by ${value.toFixed(2)}. `}
           {value < 1 && `Points you earn on ${exercise.name} are cut to ${value.toFixed(2)} of normal. `}
           Equipment for {lowerNames(muscles)} raises this{exercise.secondary.length ? ', with primary muscles counting double' : ''}.
-          {dusty && ` Dust is taking ${multipliers.dustPenalty.toFixed(2)} off every muscle until your next workout.`}
+          {dusty && ` Dust takes ${Math.round(multipliers.dustPenalty * 100)}% off every muscle until your next workout.`}
         </p>
       </div>
       <dl class="pg-facts">

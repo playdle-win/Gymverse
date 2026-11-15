@@ -52,8 +52,9 @@ export const shortDate = (ts) => new Date(ts).toLocaleDateString('en-GB', { day:
 /** 54 -> "54 min", 75 -> "1 h 15 min". */
 export const formatMinutes = (min) => (min < 60 ? `${min} min` : `${Math.floor(min / 60)} h ${min % 60 ? `${min % 60} min` : ''}`.trim());
 
-/** 82.5 -> "82.5", 80 -> "80". */
-export const formatKg = (kg) => String(Math.round(kg * 10) / 10);
+const oneDecimal = new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 });
+/** 82.5 -> "82.5", 80 -> "80", 1399.25 -> "1,399.3". */
+export const formatKg = (kg) => oneDecimal.format(kg);
 
 /** Running clock "24:18" or "1:02:45" from milliseconds. */
 export function formatClock(ms) {

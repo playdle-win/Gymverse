@@ -50,7 +50,7 @@ export function ExerciseProgressPage({ id }) {
   if (!series.length) {
     return (
       <Screen title={exercise.name}>
-        <EmptyState icon="trend-up" title="No sessions yet" text={`Log ${exercise.name} in a workout and its chart starts here.`} />
+        <EmptyState icon="trend-up" title="No workouts yet" text={`Log ${exercise.name} in a workout and its chart starts here.`} />
         {guide}
       </Screen>
     );
@@ -81,11 +81,11 @@ export function ExerciseProgressPage({ id }) {
           </div>
           <p class="t-callout pg-tabular">{weekdayDate(session.t)}, top set {setLabel(exercise, session.topSet)}</p>
           <p class={cx('t-foot pg-tabular', change && points[shown].v > points[0].v ? 'c-good' : 'c-2')}>
-            {shown === 0 ? (series.length > 1 ? 'First session' : 'One session so far. The line starts with your next one.') : `${change || 'No change'} since ${shortDate(first.t)}`}
+            {shown === 0 ? (series.length > 1 ? 'First workout' : 'One workout so far. The line starts with your next one.') : `${change || 'No change'} since ${shortDate(first.t)}`}
           </p>
         </div>
         <LineChart points={points} selected={picked === null ? null : shown} onSelect={setPicked} valueText={describe}
-          summary={`${exercise.name}, ${metric.name} per session. ${series.length} ${series.length === 1 ? 'session' : 'sessions'} from ${shortDate(first.t)} to ${shortDate(latest.t)}. Latest ${metric.format(values[values.length - 1])} kg, lowest ${metric.format(Math.min(...values))} kg, highest ${metric.format(Math.max(...values))} kg.`} />
+          summary={`${exercise.name}, ${metric.name} per workout. ${series.length} ${series.length === 1 ? 'workout' : 'workouts'} from ${shortDate(first.t)} to ${shortDate(latest.t)}. Latest ${metric.format(values[values.length - 1])} kg, lowest ${metric.format(Math.min(...values))} kg, highest ${metric.format(Math.max(...values))} kg.`} />
         {exercise.bodyweight && (
           <p class="t-foot c-2">
             Load counts {exercise.bwFactor === 1 ? 'your body weight' : `${Math.round(exercise.bwFactor * 100)}% of your body weight`} ({formatKg(bodyKg)} kg) plus any added weight.
@@ -99,14 +99,14 @@ export function ExerciseProgressPage({ id }) {
           <Stat value={formatKg(latest.est1RM)} unit="kg" label="Estimated 1RM" />
         </StatRow>
         <StatRow>
-          <Stat value={series.length} label={series.length === 1 ? 'Session' : 'Sessions'} />
+          <Stat value={series.length} label={series.length === 1 ? 'Workout' : 'Workouts'} />
           <Stat value={(series.length / weeks).toFixed(1)} unit="a week" label="Average frequency" />
         </StatRow>
       </div>
 
       {guide}
 
-      <Section title="Sessions" footnote={`Each row shows the ${metric.name} of that session.`}>
+      <Section title="Workouts" footnote={`Each row shows the ${metric.name} of that workout.`}>
         <List>
           {[...series].reverse().map((p) => (
             <ListRow key={p.workoutId}

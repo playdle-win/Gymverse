@@ -82,8 +82,11 @@ export function GymScreen() {
     return () => cancelAnimationFrame(frame);
   }, [queued, building, room]);
 
+  // Finishing a workout brings the gym back to your own room, so "Go to my gym" never lands in a friend's gym.
+  useEffect(() => { setVisit(null); }, [workouts.length]);
+
   const closeSheet = () => setSheet(null);
-  const openShop = (category, itemId = null) => { setShopAt({ category, itemId }); setSheet('shop'); };
+  const openShop = (category, itemId = null) => { setShopAt({ category, itemId }); setFlash(null); setSheet('shop'); };
   const enterBuild = (itemId) => { setSheet(null); setVisit(null); setFlash(null); setMode('build'); if (itemId) setQueued(itemId); };
   const leaveBuild = () => { setMode('view'); setPlacing(null); setSelected(null); setQueued(null); setFlash(null); };
   const startVisit = (person) => { setSheet(null); setMode('view'); setVisit({ person, floor: 0 }); };

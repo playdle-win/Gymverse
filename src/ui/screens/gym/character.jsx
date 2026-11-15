@@ -33,7 +33,7 @@ function Wearable({ item, avatar, owned, short, wearing, onPick }) {
       <span class="gy-wear__art"><CosmeticThumb itemId={item.id} avatar={avatar} size={84} /></span>
       <span class="gy-wear__name">{item.name}</span>
       <span class="gy-wear__meta">
-        {wearing ? <Badge tone="accent">Wearing</Badge> : owned ? <span class="t-caption c-2">Owned</span> : (
+        {wearing ? <Badge tone="accent" solid>Wearing</Badge> : owned ? <span class="t-caption c-2">Owned</span> : (
           <span class={cx('gy-price', short > 0 && 'gy-price--short')}><Points value={item.price} size="s" /></span>
         )}
       </span>

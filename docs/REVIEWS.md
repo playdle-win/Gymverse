@@ -12,3 +12,12 @@ Every agent's work is graded out of 10 in its own field. 8 passes; below 8 goes 
 | 2 | Progress + Exercises screens | 1 | 8.5 | Pass | Summary first, honest single-scale charts with scrubbing, consistency ties training to passive income in plain words, exercise detail shows the gym multiplier. Numbers hand-checked against stats functions. Open: arcade hairlines 1px vs kit 2px. |
 | 2 | Workout flow (Home, Train, session, summary, routines) | 1 | 9 | Pass | Logging is thumb-fast, live points estimate matches the final total, focus offer and buddy bonus are woven in, summary explains where points came from. Scripted flow verified wallet and history. Open: rest timer resets on reload. |
 | 2 | Gym tab (room HUD, shop, build, character, rooms, multipliers, dust) | 1 | 8.5 | Pass | Room stays the hero, every purchase explains its effect on multipliers, price maths shown for finishes, exponential space pricing visible, build tray and contextual action bar work, visiting friends works. Scripted buy, place, store loop verified. Open: no keyboard nudge for the ghost; arcade and varsity not checked by the agent for dust and rooms. |
+| 3 | Independent QA (all flows, 3 styles, light/dark, 360 to 430 px, desktop, reduced motion) | 1 | Ship with caveats | 10 fixes | Fixed: Explore list empty, pointer offset in the scaled desktop frame, wrong gym after a workout while visiting, dead screen after reset mid-workout, clipped button at 360 px, two contrast misses, copy consistency. QA scores: Home 8.5, Train and session 9, Gym 8.5, Progress 8.5, Exercises 8; Studio 9, Arcade 8.5, Varsity 8.5. |
+
+## Open after QA (need a decision, not a fix)
+
+1. Uncollected passive income is lost when consistency drops below Consistent. Bank it when earned, or keep it as a nudge to collect?
+2. Browser back does not step through tabs or pushed pages (tab switches replace history).
+3. A minimised workout can only be resumed from Home and Train; a persistent bar on every tab would fix it.
+4. Test-lab edges: skipping time mid-workout inflates its duration; resetting while placing leaves a ghost until build mode closes.
+5. A full 10 x 10 room ran at about 30 fps in headless Chrome; needs a real-device check.

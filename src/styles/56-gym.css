@@ -164,7 +164,9 @@
 }
 .gy-stage { display: grid; place-items: center; padding: var(--s-3); border-radius: var(--r-l); background: var(--bg-sunken); }
 .gy-price { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
-.gy-price--short { opacity: 0.6; }
+/* Out of reach: the coin fades and the number drops to secondary ink, so the text keeps its contrast. */
+.gy-price--short .gb-points { color: var(--ink-2); }
+.gy-price--short .gb-points-glyph { opacity: 0.6; }
 .gy-badges { display: flex; flex-wrap: wrap; gap: 6px; }
 
 /* ---- shop ---- */

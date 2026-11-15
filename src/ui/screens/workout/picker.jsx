@@ -44,7 +44,7 @@ export function ExercisePicker({ open, onClose, onAdd, focus, inUse = [] }) {
               {shown.map((exercise) => {
                 const on = picked.includes(exercise.id);
                 const pays = focus && focus.exerciseIds.includes(exercise.id);
-                const where = joinNames(exercise.primary.map((m) => MUSCLE_LABEL[m]));
+                const where = joinNames(exercise.primary.map((m, i) => (i ? MUSCLE_LABEL[m].toLowerCase() : MUSCLE_LABEL[m])));
                 return (
                   <ListRow
                     key={exercise.id} leading={<ExerciseIcon id={exercise.id} size={44} />}

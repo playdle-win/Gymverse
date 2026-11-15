@@ -280,7 +280,11 @@ export function createGymEngine(canvas, initial = {}) {
   }
 
   // ---- input -----------------------------------------------------------------------------------------
-  const local = (ev) => { const r = canvas.getBoundingClientRect(); return [ev.clientX - r.left, ev.clientY - r.top]; };
+  // The desktop phone frame scales the stage with a CSS transform, so client pixels are converted back to layout pixels.
+  const local = (ev) => {
+    const r = canvas.getBoundingClientRect(), k = r.width ? canvas.clientWidth / r.width : 1;
+    return [(ev.clientX - r.left) * k, (ev.clientY - r.top) * k];
+  };
   function onDown(ev) {
     if (!props.room) return;
     const [x, y] = local(ev);

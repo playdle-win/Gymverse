@@ -30,7 +30,7 @@ export function MultipliersSheet({ open, onClose, multipliers, onShop, onPlace }
   return (
     <Sheet open={open} onClose={onClose} title="Multipliers" detents={['medium', 'large']}>
       <div class="gy-mults" data-testid="multipliers">
-        <p class="t-callout c-2">Each exercise earns its points times the multiplier of the muscles it trains. Main muscles count double.</p>
+        <p class="t-callout c-2">Each exercise earns its points times the multiplier of the muscles it trains. Primary muscles count double.</p>
         <StatRow>
           <Stat value={formatMultiplier(multipliers.average)} label="Gym average" />
           <Stat value={`+${formatPercent(multipliers.vibe)}`} label="Decor vibe" />

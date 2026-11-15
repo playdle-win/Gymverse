@@ -82,7 +82,8 @@
 .gb-screen__footer {
   position: absolute; left: 0; right: 0; bottom: var(--bottom-inset, 0px); z-index: 4;
   padding: 14px var(--gutter) 16px;
-  background: linear-gradient(to top, var(--bg) 66%, transparent);
+  /* Solid behind the buttons, fading only across the top padding, so scrolled content never shows through a tinted button. */
+  background: linear-gradient(to top, var(--bg) calc(100% - 14px), transparent);
 }
 .gb-screen--footer .gb-screen__body { padding-bottom: calc(var(--bottom-inset, 0px) + 112px); }
 

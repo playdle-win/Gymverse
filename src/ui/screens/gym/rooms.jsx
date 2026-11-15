@@ -35,7 +35,8 @@ function PersonCard({ person, t, onVisit }) {
 
 export function RoomsSheet({ open, onClose, t, onVisit }) {
   const [tab, setTab] = useState('friends');
-  const people = useStore((s) => s[tab]);
+  const friends = useStore((s) => s.friends), strangers = useStore((s) => s.strangers);
+  const people = tab === 'friends' ? friends : strangers;
   return (
     <Sheet open={open} onClose={onClose} title="Rooms" detents={['large']}>
       <div class="gy-rooms" data-testid="rooms">
